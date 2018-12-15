@@ -8,7 +8,7 @@ const processCssFile = require("./process-css-file");
 /**
  * Process all CSS files.
  * @param  {Config} config - The Config instance.
- * @return {Array}
+ * @return {Object}
  */
 const processCssFiles = async config => {
   const sourceFiles = await globby("**/[^_]*.css", {

@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const path = require("path");
 
 const fs = require("fs-extra");
@@ -11,10 +10,10 @@ const processCollectionPages = require("./process-collection-pages");
 const processMarkdownFiles = require("./process-markdown-files");
 const Renderer = require("./renderer");
 
-(async () => {
-  const basePath = process.cwd();
-
+const build = async (basePath = process.cwd()) => {
   const config = new Config(basePath);
+
+  console.log(`⏳ Generating website: ${config.outputDir}`);
 
   const renderer = new Renderer(config);
 
@@ -22,15 +21,29 @@ const Renderer = require("./renderer");
 
   const assets = await processCssFiles(config);
 
+  console.log(`✅ ${Object.keys(assets).length} CSS files are compiled.`);
+
   renderer.addGlobal("assets", assets);
 
   const pages = await processMarkdownFiles({ config, renderer });
 
   const {
-    posts, collections, collectionPages
+    posts, collectionPages
   } = await processCollectionPages(pages, { config, renderer });
 
-  await copyStaticFiles(config);
+  console.log(`✅ ${pages.length} markdown files are converted.`);
+
+  const files = await copyStaticFiles(config);
+
+  console.log(`✅ ${files.length} static files are copied.`);
 
   await generateSitemap({ config, posts, collectionPages });
-})();
+
+  console.log("✅ Sitemap is generated.");
+
+  console.log(`🎉 Build complete!`);
+
+  return { config, renderer };
+};
+
+module.exports = build;
