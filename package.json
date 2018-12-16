@@ -1,14 +1,13 @@
 {
-  "name": "bagja.net",
-  "version": "1.0.0",
-  "description": "Programming blog of Risan Bagja Pradana.",
+  "name": "flores",
+  "version": "0.1.0",
+  "description": "Minimalist static site generator.",
   "keywords": [
-    "risan",
-    "blog"
+    "static-site-generator"
   ],
-  "homepage": "https://github.com/risan/bagja.net#readme",
+  "homepage": "https://github.com/risan/flores#readme",
   "bugs": {
-    "url": "https://github.com/risan/bagja.net/issues"
+    "url": "https://github.com/risan/flores/issues"
   },
   "license": "MIT",
   "author": {
@@ -18,14 +17,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/risan/bagja.net.git"
+    "url": "https://github.com/risan/flores.git"
   },
   "scripts": {
-    "build": "NODE_ENV=production ./scripts/build-cli.js",
-    "dev": "NODE_ENV=development ./scripts/watch-cli.js",
-    "serve": "NODE_ENV=development ./scripts/serve-cli.js",
     "lint": "eslint ./",
-    "lint-fix": "eslint ./ --fix"
+    "lint-fix": "eslint ./ --fix",
+    "prepublishOnly": "npm run lint && npm run test",
+    "test": "jest"
   },
   "dependencies": {
     "chokidar": "^2.0.4",
@@ -53,6 +51,6 @@
   },
   "devDependencies": {},
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=8.0.0"
   }
 }
