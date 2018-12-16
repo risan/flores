@@ -15,6 +15,7 @@
     "email": "risanbagja@gmail.com",
     "url": "https://bagja.net"
   },
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/risan/flores.git"
