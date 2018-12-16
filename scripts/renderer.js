@@ -10,11 +10,13 @@ class Renderer {
    */
   constructor(config) {
     this.config = config;
-    this.env = nunjucks.configure(config.templatesDir);
+    this.env = nunjucks.configure(config.templatesDir, {
+      noCache: !config.isProduction()
+    });
 
     this.env.addGlobal("config", this.config);
-    this.env.addFilter("absoluteUrl", path => this.config.url(path));
-    this.env.addFilter("relativeUrl", path => this.config.relativeUrl(path));
+    this.env.addFilter("absoluteUrl", path => this.config.getUrl(path));
+    this.env.addFilter("relativeUrl", path => this.config.getRelativeUrl(path));
 
     return new Proxy(this, {
       get(renderer, prop) {

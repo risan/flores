@@ -24,8 +24,8 @@ const getOutputInfo = (sourcePath, config) => {
     ? outputPathRelative.replace(INDEX_FILENAME, "")
     : outputPathRelative;
 
-  const url = config.url(urlPath);
-  const relativeUrl = config.relativeUrl(urlPath);
+  const url = config.getUrl(urlPath);
+  const relativeUrl = config.getRelativeUrl(urlPath);
 
   return {
     outputPath,

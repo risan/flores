@@ -6,11 +6,11 @@ const fs = require("fs-extra");
 const mm = require("micromatch");
 
 const build = require("./build");
-const Config = require("./config");
 const generateSitemap = require("./generate-sitemap");
 const processCssFiles = require("./process-css-files");
 const processCollectionPages = require("./process-collection-pages");
 const processMarkdownFiles = require("./process-markdown-files");
+const runServer = require("./run-server");
 
 const EVENTS_TO_CATCH = ["change", "add", "unlink"];
 
@@ -23,8 +23,20 @@ const CSS_EXTENSION = ".css";
 const MARKDOWN_EXTENSIONS = [".md", ".markdown"];
 const TEMPLATE_EXTENSIONS = [".html", ".njs"];
 
+/**
+ * Run the file watcher.
+ * @param  {String} basePath - The project base path.
+ * @return {Promise}
+ */
 const watch = async (basePath = process.cwd()) => {
   const { config, renderer } = await build(basePath);
+
+  // await runServer({
+  //   publicDir: config.outputDir,
+  //   port: config.port
+  // });
+
+  // console.log(`⚡️ Server is running: http://localhost:${config.port}`);
 
   const assetsPath = path.relative(config.sourceDir, config.assetsDir) + "/";
   const templatesPath = path.relative(config.sourceDir, config.templatesDir) + "/";

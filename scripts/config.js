@@ -29,8 +29,8 @@ class Config {
    * @param  {String} p - The url path to generate.
    * @return {String}
    */
-  url(p = "/") {
-    const relativeUrl = this.relativeUrl(p);
+  getUrl(p = "/") {
+    const relativeUrl = this.getRelativeUrl(p);
 
     const cleanRelativeUrl = relativeUrl.replace(LEADING_SLASH, "");
 
@@ -44,7 +44,7 @@ class Config {
    * @param  {String} p - The url path to generate.
    * @return {String}
    */
-  relativeUrl(p = "/") {
+  getRelativeUrl(p = "/") {
     const baseUrl = this.data.pathPrefix ? `${this.data.pathPrefix}/` : "/";
 
     const cleanPath = p.replace(LEADING_SLASH, "");
@@ -72,20 +72,25 @@ class Config {
     data.templatesDir = path.resolve(data.sourceDir, data.templatesDir);
     data.assetsDir = path.resolve(data.sourceDir, data.assetsDir);
 
-    // url.
-    if (!PROTOCOL.test(data.url)) {
-      data.url = `http://${data.url}`;
-    }
+    if (data.env.toLowerCase() === "production") {
+      // url.
+      if (!PROTOCOL.test(data.url)) {
+        data.url = `http://${data.url}`;
+      }
 
-    data.url = data.url.replace(TRAILING_SLASH, "");
+      data.url = data.url.replace(TRAILING_SLASH, "");
 
-    // Path prefix.
-    data.pathPrefix = data.pathPrefix.replace(
-      LEADING_AND_TRAILING_SLASHES, ""
-    );
+      // Path prefix.
+      data.pathPrefix = data.pathPrefix.replace(
+        LEADING_AND_TRAILING_SLASHES, ""
+      );
 
-    if (data.pathPrefix) {
-      data.pathPrefix = `/${data.pathPrefix}`;
+      if (data.pathPrefix) {
+        data.pathPrefix = `/${data.pathPrefix}`;
+      }
+    } else {
+      data.url = `${Config.defaultData.url}:${Config.defaultData.port}`;
+      data.pathPrefix = "";
     }
 
     return data;
@@ -130,6 +135,7 @@ class Config {
     return {
       env: process.env.NODE_ENV ? process.env.NODE_ENV : "production",
       url: "http://localhost",
+      port: 4000,
       pathPrefix: "",
       sourceDir: "src",
       outputDir: "public",

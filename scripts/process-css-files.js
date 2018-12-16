@@ -25,7 +25,7 @@ const processCssFiles = async config => {
   );
 
   const outputRelativeUrls = outputFiles.map(
-    file => config.relativeUrl(path.relative(config.outputDir, file))
+    file => config.getRelativeUrl(path.relative(config.outputDir, file))
   );
 
   return zipObject(sourceNames, outputRelativeUrls);

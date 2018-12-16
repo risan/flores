@@ -10,6 +10,11 @@ const processCollectionPages = require("./process-collection-pages");
 const processMarkdownFiles = require("./process-markdown-files");
 const Renderer = require("./renderer");
 
+/**
+ * Build the site.
+ * @param  {String} basePath - The project base path.
+ * @return {Object}
+ */
 const build = async (basePath = process.cwd()) => {
   const config = new Config(basePath);
 
