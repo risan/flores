@@ -1,8 +1,5 @@
 # Flores [WIP]
 
-[![Build Status](https://badgen.net/travis/risan/flores)](https://travis-ci.org/risan/flores)
-[![Test Covarage](https://badgen.net/codecov/c/github/risan/flores)](https://codecov.io/gh/risan/flores)
-[![Greenkeeper](https://badges.greenkeeper.io/risan/flores.svg)](https://greenkeeper.io)
 [![Latest Version](https://badgen.net/npm/v/flores)](https://www.npmjs.com/package/flores)
 
 Minimalist static site generator.
