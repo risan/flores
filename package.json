@@ -20,12 +20,7 @@
     "type": "git",
     "url": "https://github.com/risan/flores.git"
   },
-  "scripts": {
-    "lint": "eslint ./",
-    "lint-fix": "eslint ./ --fix",
-    "prepublishOnly": "npm run lint && npm run test",
-    "test": "jest"
-  },
+  "scripts": {},
   "dependencies": {
     "chokidar": "^2.0.4",
     "cssnano": "^4.1.7",
