@@ -1,0 +1,7 @@
+__tests__
+coverage
+.eslintignore
+.eslintrc.js
+.travis.yml
+jest.config.js
+yarn.lock
