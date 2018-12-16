@@ -31,12 +31,12 @@ const TEMPLATE_EXTENSIONS = [".html", ".njs"];
 const watch = async (basePath = process.cwd()) => {
   const { config, renderer } = await build(basePath);
 
-  // await runServer({
-  //   publicDir: config.outputDir,
-  //   port: config.port
-  // });
+  await runServer({
+    publicDir: config.outputDir,
+    port: config.port
+  });
 
-  // console.log(`⚡️ Server is running: http://localhost:${config.port}`);
+  console.log(`⚡️ Server is running: http://localhost:${config.port}`);
 
   const assetsPath = path.relative(config.sourceDir, config.assetsDir) + "/";
   const templatesPath = path.relative(config.sourceDir, config.templatesDir) + "/";
