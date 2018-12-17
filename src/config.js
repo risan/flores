@@ -35,8 +35,8 @@ class Config {
     const cleanRelativeUrl = relativeUrl.replace(LEADING_SLASH, "");
 
     return cleanRelativeUrl
-      ? `${this.data.url}/${cleanRelativeUrl}`
-      : this.data.url;
+      ? `${this.data.origin}/${cleanRelativeUrl}`
+      : this.data.origin;
   }
 
   /**
@@ -45,11 +45,11 @@ class Config {
    * @return {String}
    */
   getRelativeUrl(p = "/") {
-    const baseUrl = this.data.pathPrefix ? `${this.data.pathPrefix}/` : "/";
+    const pathPrefix = this.data.pathname ? `${this.data.pathname}/` : "/";
 
     const cleanPath = p.replace(LEADING_SLASH, "");
 
-    return cleanPath ? baseUrl + cleanPath : baseUrl;
+    return cleanPath ? pathPrefix + cleanPath : pathPrefix;
   }
 
   /**
@@ -81,16 +81,15 @@ class Config {
     data.port = port ? parseInt(port, 10) : 4000;
 
     if (data.env.toLowerCase() === "production") {
-      data.url = origin;
-      data.pathPrefix = pathname.replace(LEADING_AND_TRAILING_SLASHES, "");
+      data.origin = origin;
+      data.pathname = pathname.replace(LEADING_AND_TRAILING_SLASHES, "");
 
-      if (data.pathPrefix) {
-        data.pathPrefix = `/${data.pathPrefix}`;
+      if (data.pathname) {
+        data.pathname = `/${data.pathname}`;
       }
     } else {
-      // Override url value for development.
-      data.url = `http://localhost:${port}`;
-      data.pathPrefix = "";
+      data.origin = `http://localhost:${port}`;
+      data.pathname = "";
     }
 
     return data;
