@@ -7,6 +7,8 @@ const runServer = require("./run-server");
  * @return {Promise}
  */
 const serve = async (basePath = process.cwd()) => {
+  process.env.NODE_ENV = "development";
+
   const { config } = await build(basePath);
 
   await runServer({

@@ -27,6 +27,8 @@ const TEMPLATE_EXTENSIONS = [".html", ".njs"];
  * @return {Promise}
  */
 const watch = async (basePath = process.cwd()) => {
+  process.env.NODE_ENV = "development";
+
   const { config, renderer } = await build(basePath);
 
   const assetsPath = path.relative(config.sourceDir, config.assetsDir) + "/";
