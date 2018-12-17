@@ -12,8 +12,6 @@ const processCollectionPages = require("./process-collection-pages");
 const processMarkdownFiles = require("./process-markdown-files");
 const runServer = require("./run-server");
 
-const EVENTS_TO_CATCH = ["change", "add", "unlink"];
-
 const CSS_FILE = "css";
 const MARKDOWN_FILE = "markdown";
 const TEMPLATE_FILE = "template";
@@ -30,13 +28,6 @@ const TEMPLATE_EXTENSIONS = [".html", ".njs"];
  */
 const watch = async (basePath = process.cwd()) => {
   const { config, renderer } = await build(basePath);
-
-  await runServer({
-    publicDir: config.outputDir,
-    port: config.port
-  });
-
-  console.log(`⚡️ Server is running: http://localhost:${config.port}`);
 
   const assetsPath = path.relative(config.sourceDir, config.assetsDir) + "/";
   const templatesPath = path.relative(config.sourceDir, config.templatesDir) + "/";
@@ -71,42 +62,32 @@ const watch = async (basePath = process.cwd()) => {
   };
 
   /**
-   * Get event message for logging.
-   * @param  {String} options.event    - The event type.
-   * @param  {String} options.p        - The file path.
-   * @param  {String} options.fileType - The file type.
-   * @return {String}
-   */
-  const getEventMessage = ({ event, p, fileType }) => {
-    switch (event) {
-      case "change":
-        return `✏️ ${fileType} file is updated: ${p}`;
-      case "add":
-        return `✨ New ${fileType} file: ${p}`;
-      case "unlink":
-        return `🔥 ${fileType} is deleted: ${p}`;
-    };
-  };
-
-  /**
-   * Handle css file change.
+   * Process css files.
+   * @param  {Boolean} options.reprocessMarkdown - Set to true to reprocess the markdown files to.
    * @return {Promise}
    */
-  const handleCssChange = async () => {
+  const processCss = async ({ reprocessMarkdown = false } = {}) => {
     const assets = await processCssFiles(config);
 
     console.log(`✅ ${Object.keys(assets).length} CSS files are compiled.`);
 
     renderer.addGlobal("assets", assets);
 
-    await handleMarkdownOrTemplateChange();
+    if (reprocessMarkdown) {
+      await processMarkdown();
+    }
   };
 
   /**
-   * Handle markdown or template change.
+   * Process markdown files.
+   * @param  {Boolean} options.clearCache - Set to true to clear the compiled template caches.
    * @return {Promise}
    */
-  const handleMarkdownOrTemplateChange = async () => {
+  const processMarkdown = async ({ clearCache = false } = {}) => {
+    if (clearCache) {
+      renderer.clearCache();
+    }
+
     const pages = await processMarkdownFiles({ config, renderer });
 
     const {
@@ -121,24 +102,24 @@ const watch = async (basePath = process.cwd()) => {
   };
 
   /**
-   * Handle static file change.
-   * @param  {String} options.event - The event type.
-   * @param  {String} options.p     - The file path.
+   * Copy file to output directory.
+   * @param  {String} p - The file path to copy.
    * @return {Promise}
    */
-  const handleStaticFileChange = async ({ event, p }) => {
-    if (["change", "add"].includes(event)) {
-      await fs.copy(
-        path.join(config.sourceDir, p),
-        path.join(config.outputDir, p)
-      );
-    } else if (event === "unlink") {
-      await fs.remove(path.join(config.outputDir, p));
-    }
-  };
+  const copyFile = async p => fs.copy(
+    path.join(config.sourceDir, p),
+    path.join(config.outputDir, p)
+  );
 
-  const handleCssChangeDebounced = debounce(handleCssChange, 1000);
-  const handleMarkdownOrTemplateChangeDebounced = debounce(handleMarkdownOrTemplateChange, 1000);
+  /**
+   * Remove file from the output directory.
+   * @param  {String} p - The file path to remove.
+   * @return {Promise}
+   */
+  const removeFile = async p => fs.remove(path.join(config.outputDir, p));
+
+  const processCssDebounced = debounce(processCss, 1000);
+  const processMarkdownDebounced = debounce(processMarkdown, 1000);;
 
   const watcher = chokidar.watch(".", {
     ignored: /(^|[\/\\])\../,
@@ -146,27 +127,70 @@ const watch = async (basePath = process.cwd()) => {
     cwd: config.sourceDir
   });
 
-  watcher.on("ready", () => console.log("👀 watcher is ready..."));
+  watcher.on("ready", async () => {
+    console.log("👀 watcher is ready...");
 
-  watcher.on("all", async (event, p) => {
-    if (!EVENTS_TO_CATCH.includes(event)) {
-      return;
-    }
+    await runServer({
+      publicDir: config.outputDir,
+      port: config.port
+    });
 
+    console.log(`⚡️ Server is running: http://localhost:${config.port}`);
+  });
+
+  watcher.on("change", async p => {
     const fileType = getFileType(p);
 
     if (fileType === null) {
       return;
     }
 
-    console.log(getEventMessage({ event, p, fileType }));
+    console.log(`✏️ ${fileType} file is updated: ${p}`);
 
     if (fileType === CSS_FILE) {
-      await handleCssChangeDebounced();
-    } else if ([MARKDOWN_FILE, TEMPLATE_FILE].includes(fileType)) {
-      await handleMarkdownOrTemplateChangeDebounced();
+      await processCssDebounced();
+    } else if (fileType === MARKDOWN_FILE) {
+      await processMarkdownDebounced();
+    } else if (fileType === TEMPLATE_FILE) {
+      await processMarkdownDebounced({ clearCache: true });
     } else {
-      await handleStaticFileChange({ event, p });
+      await copyFile(p);
+    }
+  });
+
+  watcher.on("add", async p => {
+    const fileType = getFileType(p);
+
+    if (fileType === null) {
+      return;
+    }
+
+    console.log(`✨ New ${fileType} file: ${p}`);
+
+    if (fileType === CSS_FILE) {
+      await processCssDebounced({ reprocessMarkdown: true });
+    } else if ([MARKDOWN_FILE, TEMPLATE_FILE].includes(fileType)) {
+      await processMarkdownDebounced();
+    } else {
+      await copyFile(p);
+    }
+  });
+
+  watcher.on("unlink", async p => {
+    const fileType = getFileType(p);
+
+    if (fileType === null) {
+      return;
+    }
+
+    console.log(`🔥 ${fileType} is deleted: ${p}`);
+
+    if (fileType === CSS_FILE) {
+      await processCssDebounced({ reprocessMarkdown: true });
+    } else if ([MARKDOWN_FILE, TEMPLATE_FILE].includes(fileType)) {
+      await processMarkdownDebounced();
+    } else {
+      await removeFile(p);
     }
   });
 };

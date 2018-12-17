@@ -10,9 +10,7 @@ class Renderer {
    */
   constructor(config) {
     this.config = config;
-    this.env = nunjucks.configure(config.templatesDir, {
-      noCache: !config.isProduction()
-    });
+    this.env = nunjucks.configure(config.templatesDir);
 
     this.env.addGlobal("config", this.config);
     this.env.addFilter("absoluteUrl", path => this.config.getUrl(path));
@@ -55,6 +53,14 @@ class Renderer {
     await fs.outputFile(outputPath, str);
 
     return str;
+  }
+
+  /**
+   * Clear the compiled template cache.
+   * @return {Void}
+   */
+  clearCache() {
+    this.env.loaders.forEach(loader => loader.cache = {});
   }
 }
 
