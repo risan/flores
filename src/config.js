@@ -1,8 +1,8 @@
 const path = require("path");
+const { URL } = require("url");
 
 const PROTOCOL = /^http[s]?:\/\//i;
 const LEADING_SLASH = /^\//;
-const TRAILING_SLASH = /\/$/;
 const LEADING_AND_TRAILING_SLASHES = /(^\/|\/$)/g;
 
 class Config {
@@ -72,24 +72,24 @@ class Config {
     data.templatesDir = path.resolve(data.sourceDir, data.templatesDir);
     data.assetsDir = path.resolve(data.sourceDir, data.assetsDir);
 
+    if (!PROTOCOL.test(data.url)) {
+      data.url = `http://${data.url}`;
+    }
+
+    const { origin, port, pathname } = new URL(data.url);
+
+    data.port = port ? parseInt(port, 10) : 4000;
+
     if (data.env.toLowerCase() === "production") {
-      // url.
-      if (!PROTOCOL.test(data.url)) {
-        data.url = `http://${data.url}`;
-      }
-
-      data.url = data.url.replace(TRAILING_SLASH, "");
-
-      // Path prefix.
-      data.pathPrefix = data.pathPrefix.replace(
-        LEADING_AND_TRAILING_SLASHES, ""
-      );
+      data.url = origin;
+      data.pathPrefix = pathname.replace(LEADING_AND_TRAILING_SLASHES, "");
 
       if (data.pathPrefix) {
         data.pathPrefix = `/${data.pathPrefix}`;
       }
     } else {
-      data.url = `${Config.defaultData.url}:${Config.defaultData.port}`;
+      // Override url value for development.
+      data.url = `http://localhost:${port}`;
       data.pathPrefix = "";
     }
 
@@ -134,9 +134,7 @@ class Config {
   static get defaultData() {
     return {
       env: process.env.NODE_ENV ? process.env.NODE_ENV : "production",
-      url: "http://localhost",
-      port: 4000,
-      pathPrefix: "",
+      url: "http://localhost:4000",
       sourceDir: "src",
       outputDir: "public",
       templatesDir: "templates",
