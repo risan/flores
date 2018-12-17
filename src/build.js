@@ -12,11 +12,11 @@ const Renderer = require("./renderer");
 
 /**
  * Build the site.
- * @param  {String} basePath - The project base path.
+ * @param  {Object} options - The configuration data.
  * @return {Object}
  */
-const build = async (basePath = process.cwd()) => {
-  const config = new Config(basePath);
+const build = async (options = {}) => {
+  const config = new Config(options);
 
   console.log(`⏳ Generating website: ${config.outputDir}`);
 

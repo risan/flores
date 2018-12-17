@@ -3,13 +3,11 @@ const runServer = require("./run-server");
 
 /**
  * Serve the generated site.
- * @param  {String} basePath - The project base path.
+ * @param  {Object} options - The configuration data.
  * @return {Promise}
  */
-const serve = async (basePath = process.cwd()) => {
-  process.env.NODE_ENV = "development";
-
-  const { config } = await build(basePath);
+const serve = async (options = {}) => {
+  const { config } = await build({ ...options, env: "development" });
 
   await runServer({
     publicDir: config.outputDir,

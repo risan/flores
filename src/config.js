@@ -8,14 +8,17 @@ const LEADING_AND_TRAILING_SLASHES = /(^\/|\/$)/g;
 class Config {
   /**
    * Create new config instance.
-   * @param  {String} basePath - The site base path.
+   * @param  {String} options.basePath - The site base path.
+   * @param  {Object} options.data     - The config data.
    */
-  constructor(basePath) {
+  constructor({ basePath = process.cwd(), ...data } = {}) {
     this.basePath = basePath;
 
-    this.data = this.formatData(
-      this.loadDataFromFile()
-    );
+    this.data = this.formatData({
+      ...Config.defaultData,
+      ...this.loadDataFromFile(),
+      ...data
+    });
 
     return new Proxy(this, {
       get(config, prop) {
@@ -123,7 +126,7 @@ class Config {
       //
     }
 
-    return { ...Config.defaultData, ...data };
+    return data;
   }
 
   /**

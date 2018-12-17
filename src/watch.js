@@ -23,13 +23,11 @@ const TEMPLATE_EXTENSIONS = [".html", ".njs"];
 
 /**
  * Run the file watcher.
- * @param  {String} basePath - The project base path.
+ * @param  {Object} options - The configuration data.
  * @return {Promise}
  */
-const watch = async (basePath = process.cwd()) => {
-  process.env.NODE_ENV = "development";
-
-  const { config, renderer } = await build(basePath);
+const watch = async (options = {}) => {
+  const { config, renderer } = await build({ ...options, env: "development" });
 
   const assetsPath = path.relative(config.sourceDir, config.assetsDir) + "/";
   const templatesPath = path.relative(config.sourceDir, config.templatesDir) + "/";
