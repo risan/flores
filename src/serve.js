@@ -1,3 +1,4 @@
+/* eslint no-console: "off" */
 const build = require("./build");
 const runServer = require("./run-server");
 

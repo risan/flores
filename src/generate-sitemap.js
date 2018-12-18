@@ -16,15 +16,15 @@ const formatSiteMapItem = (page, defaultValue = {}) => {
     return null;
   }
 
-  let obj = {
+  const obj = {
     url: page.url,
     ...defaultValue,
-    ...get(page, "frontMatter.sitemap", {}),
+    ...get(page, "frontMatter.sitemap", {})
   };
 
   if (has(page, "frontMatter.modifiedAt")) {
     obj.lastmodISO = page.frontMatter.modifiedAt.toISOString();
-  } else if(has(page, "frontMatter.date")) {
+  } else if (has(page, "frontMatter.date")) {
     obj.lastmodISO = page.frontMatter.date.toISOString();
   }
 
@@ -40,23 +40,20 @@ const formatSiteMapItem = (page, defaultValue = {}) => {
  */
 const generateSitemap = async ({ posts, collectionPages, config }) => {
   const postUrls = posts.map(post => formatSiteMapItem(post));
-  const collectionPageUrls = collectionPages.map(
-    page => formatSiteMapItem(page, {
+  const collectionPageUrls = collectionPages.map(page =>
+    formatSiteMapItem(page, {
       changefreq: "daily"
     })
   );
 
   const sitemap = sm.createSitemap({
     hostname: config.url,
-    urls: [
-      ...collectionPageUrls.filter(Boolean),
-      ...postUrls.filter(Boolean)
-    ]
+    urls: [...collectionPageUrls.filter(Boolean), ...postUrls.filter(Boolean)]
   });
 
   const outputPath = path.join(config.outputDir, "sitemap.xml");
 
-  return await fs.outputFile(outputPath, sitemap.toString());
+  return fs.outputFile(outputPath, sitemap.toString());
 };
 
 module.exports = generateSitemap;

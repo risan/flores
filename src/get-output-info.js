@@ -12,12 +12,15 @@ const getOutputInfo = (sourcePath, config) => {
   // Output path.
   const sourcePathRelative = path.relative(config.sourceDir, sourcePath);
   const { base, ...sourcePathRelativeObj } = path.parse(sourcePathRelative);
-  const outputPathRelative = path.format({ ...sourcePathRelativeObj, ext: ".html" });
+  const outputPathRelative = path.format({
+    ...sourcePathRelativeObj,
+    ext: ".html"
+  });
   const outputPath = path.join(config.outputDir, outputPathRelative);
 
   // Collection dir.
   const { dir } = path.parse(outputPathRelative);
-  const collectionName = dir ? dir : "root";
+  const collectionName = dir || "root";
 
   // Urls.
   const urlPath = INDEX_FILENAME.test(outputPathRelative)

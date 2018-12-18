@@ -1,3 +1,4 @@
+/* eslint no-console: "off" */
 const express = require("express");
 const SocketIo = require("socket.io");
 

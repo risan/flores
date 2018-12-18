@@ -19,10 +19,7 @@ const processCssFile = async (file, config) => {
   const relativePath = path.relative(config.sourceDir, file);
   let outputPath = path.join(config.outputDir, relativePath);
 
-  const processor = postcss([
-    atImport,
-    presetEnv(config.postcssPresetEnv)
-  ]);
+  const processor = postcss([atImport, presetEnv(config.postcssPresetEnv)]);
 
   if (config.isProduction()) {
     processor.use(cssnano);

@@ -51,11 +51,14 @@ class Renderer {
     }
 
     if (this.config.watch) {
-      str = str.replace(/(<\/body[\s]*>)/i, `
+      str = str.replace(
+        /(<\/body[\s]*>)/i,
+        `
         <script src="/socket.io/socket.io.js"></script>
         <script src="/flores/socket-client.js"></script>
         $1
-      `);
+      `
+      );
     }
 
     await fs.outputFile(outputPath, str);
@@ -68,7 +71,9 @@ class Renderer {
    * @return {Void}
    */
   clearCache() {
-    this.env.loaders.forEach(loader => loader.cache = {});
+    for (let i = 0; i < this.env.loaders.length; i += 1) {
+      this.env.loaders[i].cache = {};
+    }
   }
 }
 

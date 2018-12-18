@@ -1,5 +1,5 @@
-const groupBy = require("lodash.groupBy");
-const orderBy = require("lodash.orderBy");
+const groupBy = require("lodash.groupby");
+const orderBy = require("lodash.orderby");
 
 const processCollectionPage = require("./process-collection-page");
 
@@ -21,13 +21,15 @@ const processCollectionPages = async (pages, { config, renderer }) => {
 
   const collections = groupBy(posts, "collectionName");
 
-  await Promise.all(collectionPages.map(page =>
-    processCollectionPage(page, {
-      collections,
-      config,
-      renderer
-    })
-  ));
+  await Promise.all(
+    collectionPages.map(page =>
+      processCollectionPage(page, {
+        collections,
+        config,
+        renderer
+      })
+    )
+  );
 
   return { posts, collections, collectionPages };
 };

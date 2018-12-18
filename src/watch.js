@@ -1,3 +1,4 @@
+/* eslint no-console: "off" */
 const path = require("path");
 
 const chokidar = require("chokidar");
@@ -45,8 +46,11 @@ const watch = async (options = {}) => {
    */
   const reloadBrowser = () => socketIo.emit("flores.reloadBrowser");
 
-  const assetsPath = path.relative(config.sourceDir, config.assetsDir) + "/";
-  const templatesPath = path.relative(config.sourceDir, config.templatesDir) + "/";
+  const assetsPath = `${path.relative(config.sourceDir, config.assetsDir)}/`;
+  const templatesPath = `${path.relative(
+    config.sourceDir,
+    config.templatesDir
+  )}/`;
 
   /**
    * Get file type for the given path.
@@ -66,7 +70,10 @@ const watch = async (options = {}) => {
       return MARKDOWN_FILE;
     }
 
-    if (TEMPLATE_EXTENSIONS.includes(extension) && p.startsWith(templatesPath)) {
+    if (
+      TEMPLATE_EXTENSIONS.includes(extension) &&
+      p.startsWith(templatesPath)
+    ) {
       return TEMPLATE_FILE;
     }
 
@@ -75,6 +82,32 @@ const watch = async (options = {}) => {
     }
 
     return null;
+  };
+
+  /**
+   * Process markdown files.
+   * @param  {Boolean} options.clearCache - Set to true to clear the compiled template caches.
+   * @return {Promise}
+   */
+  const processMarkdown = async ({ clearCache = false } = {}) => {
+    if (clearCache) {
+      renderer.clearCache();
+    }
+
+    const pages = await processMarkdownFiles({ config, renderer });
+
+    const { posts, collectionPages } = await processCollectionPages(pages, {
+      config,
+      renderer
+    });
+
+    console.log(`✅ ${pages.length} markdown files are converted.`);
+
+    await generateSitemap({ config, posts, collectionPages });
+
+    console.log("✅ Sitemap is generated.");
+
+    reloadBrowser();
   };
 
   /**
@@ -97,39 +130,12 @@ const watch = async (options = {}) => {
   };
 
   /**
-   * Process markdown files.
-   * @param  {Boolean} options.clearCache - Set to true to clear the compiled template caches.
-   * @return {Promise}
-   */
-  const processMarkdown = async ({ clearCache = false } = {}) => {
-    if (clearCache) {
-      renderer.clearCache();
-    }
-
-    const pages = await processMarkdownFiles({ config, renderer });
-
-    const {
-      posts, collectionPages
-    } = await processCollectionPages(pages, { config, renderer });
-
-    console.log(`✅ ${pages.length} markdown files are converted.`);
-
-    await generateSitemap({ config, posts, collectionPages });
-
-    console.log("✅ Sitemap is generated.");
-
-    reloadBrowser();
-  };
-
-  /**
    * Copy file to output directory.
    * @param  {String} p - The file path to copy.
    * @return {Promise}
    */
-  const copyFile = async p => fs.copy(
-    path.join(config.sourceDir, p),
-    path.join(config.outputDir, p)
-  );
+  const copyFile = async p =>
+    fs.copy(path.join(config.sourceDir, p), path.join(config.outputDir, p));
 
   /**
    * Remove file from the output directory.
@@ -142,7 +148,7 @@ const watch = async (options = {}) => {
   const processMarkdownDebounced = debounce(processMarkdown, 500);
 
   const watcher = chokidar.watch(".", {
-    ignored: /(^|[\/\\])\../,
+    ignored: /(^|[/\\])\../,
     ignoreInitial: true,
     cwd: config.sourceDir
   });

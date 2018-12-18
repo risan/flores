@@ -1,5 +1,3 @@
-const groupBy = require("lodash.groupBy");
-
 /**
  * Process collection page.
  * @param  {Object} page                - Collection page markdown data.
@@ -8,7 +6,10 @@ const groupBy = require("lodash.groupBy");
  * @param  {Renderer} options.renderer  - The Renderer instance.
  * @return {Promise}
  */
-const processCollectionPage = async (page, { collections, config, renderer }) => {
+const processCollectionPage = async (
+  page,
+  { collections, config, renderer }
+) => {
   const template = page.frontMatter.template
     ? page.frontMatter.template
     : config.defaultCollectionTemplate;

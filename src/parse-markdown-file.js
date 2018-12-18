@@ -4,11 +4,10 @@ const md = require("markdown-it")();
 const mdAnchor = require("markdown-it-anchor");
 const mdToc = require("markdown-it-table-of-contents");
 
-md.use(mdAnchor, { permalink: true, permalinkBefore: true })
-  .use(mdToc, {
-    containerHeaderHtml: "<h2>Table of Contents</h2>",
-    includeLevel: [2, 3, 4, 5]
-  });
+md.use(mdAnchor, { permalink: true, permalinkBefore: true }).use(mdToc, {
+  containerHeaderHtml: "<h2>Table of Contents</h2>",
+  includeLevel: [2, 3, 4, 5]
+});
 
 /**
  * Parse markdown file.

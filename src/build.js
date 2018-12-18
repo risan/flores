@@ -1,5 +1,4 @@
-const path = require("path");
-
+/* eslint no-console: "off" */
 const fs = require("fs-extra");
 
 const Config = require("./config");
@@ -32,9 +31,10 @@ const build = async (options = {}) => {
 
   const pages = await processMarkdownFiles({ config, renderer });
 
-  const {
-    posts, collectionPages
-  } = await processCollectionPages(pages, { config, renderer });
+  const { posts, collectionPages } = await processCollectionPages(pages, {
+    config,
+    renderer
+  });
 
   console.log(`✅ ${pages.length} markdown files are converted.`);
 

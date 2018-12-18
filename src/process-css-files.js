@@ -20,12 +20,12 @@ const processCssFiles = async config => {
     sourceFiles.map(file => processCssFile(file, config))
   );
 
-  const sourceNames = sourceFiles.map(
-    file => path.relative(config.assetsDir, file)
+  const sourceNames = sourceFiles.map(file =>
+    path.relative(config.assetsDir, file)
   );
 
-  const outputRelativeUrls = outputFiles.map(
-    file => config.getRelativeUrl(path.relative(config.outputDir, file))
+  const outputRelativeUrls = outputFiles.map(file =>
+    config.getRelativeUrl(path.relative(config.outputDir, file))
   );
 
   return zipObject(sourceNames, outputRelativeUrls);

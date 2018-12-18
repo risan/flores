@@ -13,10 +13,14 @@ const copyStaticFiles = async config => {
     cwd: config.sourceDir
   });
 
-  await Promise.all(files.map(file => fs.copy(
-    path.join(config.sourceDir, file),
-    path.join(config.outputDir, file)
-  )));
+  await Promise.all(
+    files.map(file =>
+      fs.copy(
+        path.join(config.sourceDir, file),
+        path.join(config.outputDir, file)
+      )
+    )
+  );
 
   return files;
 };

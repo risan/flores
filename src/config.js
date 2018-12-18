@@ -16,7 +16,6 @@ class Config {
 
     this.data = this.formatData({
       ...Config.defaultData,
-      ...this.loadDataFromFile(),
       ...data
     });
 
@@ -70,32 +69,39 @@ class Config {
    */
   formatData(data) {
     // Directories.
-    data.sourceDir = this.resolvePath(data.sourceDir);
-    data.outputDir = this.resolvePath(data.outputDir);
-    data.templatesDir = path.resolve(data.sourceDir, data.templatesDir);
-    data.assetsDir = path.resolve(data.sourceDir, data.assetsDir);
+    const sourceDir = this.resolvePath(data.sourceDir);
+    const outputDir = this.resolvePath(data.outputDir);
+    const templatesDir = path.resolve(sourceDir, data.templatesDir);
+    const assetsDir = path.resolve(sourceDir, data.assetsDir);
 
-    if (!PROTOCOL.test(data.url)) {
-      data.url = `http://${data.url}`;
-    }
+    const url = PROTOCOL.test(data.url) ? data.url : `http://${data.url}`;
 
-    const { origin, port, pathname } = new URL(data.url);
+    let { origin, port, pathname } = new URL(url);
 
-    data.port = port ? parseInt(port, 10) : 4000;
+    port = port ? parseInt(port, 10) : 4000;
 
     if (data.env.toLowerCase() === "production") {
-      data.origin = origin;
-      data.pathname = pathname.replace(LEADING_AND_TRAILING_SLASHES, "");
+      pathname = pathname.replace(LEADING_AND_TRAILING_SLASHES, "");
 
-      if (data.pathname) {
-        data.pathname = `/${data.pathname}`;
+      if (pathname) {
+        pathname = `/${pathname}`;
       }
     } else {
-      data.origin = `http://localhost:${port}`;
-      data.pathname = "";
+      origin = `http://localhost:${port}`;
+      pathname = "";
     }
 
-    return data;
+    return {
+      ...data,
+      sourceDir,
+      outputDir,
+      templatesDir,
+      assetsDir,
+      url,
+      origin,
+      port,
+      pathname
+    };
   }
 
   /**
@@ -112,24 +118,6 @@ class Config {
   }
 
   /**
-   * Load config data from file.
-   * @return {Object} The config data.
-   */
-  loadDataFromFile() {
-    let data = {};
-
-    try {
-      const configFile = path.resolve(this.basePath, "site.config.js");
-
-      data = require(configFile);
-    } catch(error) {
-      //
-    }
-
-    return data;
-  }
-
-  /**
    * Default config data.
    * @return {Object}
    */
@@ -143,11 +131,7 @@ class Config {
       assetsDir: "assets",
       defaultTemplate: "post.html",
       defaultCollectionTemplate: "collection.html",
-      copyFiles: [
-        "images/**",
-        "robot.txt",
-        "**/*.html"
-      ],
+      copyFiles: ["images/**", "robot.txt", "**/*.html"],
       postcssPresetEnv: {
         stage: 3,
         preserve: false
