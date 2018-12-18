@@ -20,7 +20,10 @@
     "type": "git",
     "url": "https://github.com/risan/flores.git"
   },
-  "scripts": {},
+  "scripts": {
+    "lint": "eslint ./",
+    "lint-fix": "eslint ./ --fix"
+  },
   "dependencies": {
     "chokidar": "^2.0.4",
     "cssnano": "^4.1.7",
@@ -46,7 +49,14 @@
     "sitemap": "^2.1.0",
     "socket.io": "^2.2.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^5.10.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^3.3.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-prettier": "^3.0.0",
+    "prettier": "^1.15.3"
+  },
   "engines": {
     "node": ">=8.0.0"
   }
