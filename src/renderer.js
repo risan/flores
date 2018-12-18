@@ -50,6 +50,14 @@ class Renderer {
       });
     }
 
+    if (this.config.watch) {
+      str = str.replace(/(<\/body[\s]*>)/i, `
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/flores/socket-client.js"></script>
+        $1
+      `);
+    }
+
     await fs.outputFile(outputPath, str);
 
     return str;

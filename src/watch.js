@@ -27,7 +27,23 @@ const TEMPLATE_EXTENSIONS = [".html", ".njs"];
  * @return {Promise}
  */
 const watch = async (options = {}) => {
-  const { config, renderer } = await build({ ...options, env: "development" });
+  const { config, renderer } = await build({
+    ...options,
+    env: "development",
+    watch: true
+  });
+
+  const { socketIo } = await runServer({
+    publicDir: config.outputDir,
+    port: config.port,
+    watch: true
+  });
+
+  /**
+   * Reload the browser.
+   * @return {Void}
+   */
+  const reloadBrowser = () => socketIo.emit("flores.reloadBrowser");
 
   const assetsPath = path.relative(config.sourceDir, config.assetsDir) + "/";
   const templatesPath = path.relative(config.sourceDir, config.templatesDir) + "/";
@@ -75,6 +91,8 @@ const watch = async (options = {}) => {
 
     if (reprocessMarkdown) {
       await processMarkdown();
+    } else {
+      reloadBrowser();
     }
   };
 
@@ -99,6 +117,8 @@ const watch = async (options = {}) => {
     await generateSitemap({ config, posts, collectionPages });
 
     console.log("✅ Sitemap is generated.");
+
+    reloadBrowser();
   };
 
   /**
@@ -118,8 +138,8 @@ const watch = async (options = {}) => {
    */
   const removeFile = async p => fs.remove(path.join(config.outputDir, p));
 
-  const processCssDebounced = debounce(processCss, 1000);
-  const processMarkdownDebounced = debounce(processMarkdown, 1000);;
+  const processCssDebounced = debounce(processCss, 500);
+  const processMarkdownDebounced = debounce(processMarkdown, 500);
 
   const watcher = chokidar.watch(".", {
     ignored: /(^|[\/\\])\../,
@@ -127,16 +147,7 @@ const watch = async (options = {}) => {
     cwd: config.sourceDir
   });
 
-  watcher.on("ready", async () => {
-    console.log("👀 watcher is ready...");
-
-    await runServer({
-      publicDir: config.outputDir,
-      port: config.port
-    });
-
-    console.log(`⚡️ Server is running: http://localhost:${config.port}`);
-  });
+  watcher.on("ready", () => console.log("👀 watcher is ready..."));
 
   watcher.on("change", async p => {
     const fileType = getFileType(p);
@@ -148,11 +159,11 @@ const watch = async (options = {}) => {
     console.log(`✏️ ${fileType} file is updated: ${p}`);
 
     if (fileType === CSS_FILE) {
-      await processCssDebounced();
+      processCssDebounced();
     } else if (fileType === MARKDOWN_FILE) {
-      await processMarkdownDebounced();
+      await processMarkdown();
     } else if (fileType === TEMPLATE_FILE) {
-      await processMarkdownDebounced({ clearCache: true });
+      processMarkdownDebounced({ clearCache: true });
     } else {
       await copyFile(p);
     }
@@ -168,9 +179,9 @@ const watch = async (options = {}) => {
     console.log(`✨ New ${fileType} file: ${p}`);
 
     if (fileType === CSS_FILE) {
-      await processCssDebounced({ reprocessMarkdown: true });
+      processCssDebounced({ reprocessMarkdown: true });
     } else if ([MARKDOWN_FILE, TEMPLATE_FILE].includes(fileType)) {
-      await processMarkdownDebounced();
+      processMarkdownDebounced();
     } else {
       await copyFile(p);
     }
@@ -186,9 +197,9 @@ const watch = async (options = {}) => {
     console.log(`🔥 ${fileType} is deleted: ${p}`);
 
     if (fileType === CSS_FILE) {
-      await processCssDebounced({ reprocessMarkdown: true });
+      processCssDebounced({ reprocessMarkdown: true });
     } else if ([MARKDOWN_FILE, TEMPLATE_FILE].includes(fileType)) {
-      await processMarkdownDebounced();
+      processMarkdownDebounced();
     } else {
       await removeFile(p);
     }
