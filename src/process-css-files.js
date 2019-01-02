@@ -12,7 +12,7 @@ const processCssFile = require("./process-css-file");
  */
 const processCssFiles = async config => {
   const sourceFiles = await globby("**/[^_]*.css", {
-    cwd: config.assetsDir,
+    cwd: config.assetsPath,
     absolute: true
   });
 
@@ -21,11 +21,11 @@ const processCssFiles = async config => {
   );
 
   const sourceNames = sourceFiles.map(file =>
-    path.relative(config.assetsDir, file)
+    path.relative(config.assetsPath, file)
   );
 
   const outputRelativeUrls = outputFiles.map(file =>
-    config.getRelativeUrl(path.relative(config.outputDir, file))
+    config.getRelativeUrl(path.relative(config.outputPath, file))
   );
 
   return zipObject(sourceNames, outputRelativeUrls);
