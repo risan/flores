@@ -1,0 +1,11 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="{{ assets['main.css'] }}">
+</head>
+<body>
+  <h1>{{ frontMatter.title }}</h1>
+  <time>{{ frontMatter.date }}</time>
+  {{ content | safe }}
+</body>
+</html>

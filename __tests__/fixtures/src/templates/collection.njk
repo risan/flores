@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="{{ assets['main.css'] }}">
+</head>
+<body>
+  <h1>{{ frontMatter.title }}</h1>
+  <ul>
+    {% for post in collection %}
+      <li>
+        <a href="{{ post.url }}">
+          {{ post.frontMatter.title }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
