@@ -32,7 +32,7 @@ test("it can merge user options with default options", () => {
     sourceDir: "source",
     outputDir: "public",
     templatesDir: "templates"
-  })
+  });
 });
 
 test("it has absolute paths data", () => {

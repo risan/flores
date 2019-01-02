@@ -1,4 +1,4 @@
-/* global expect:false, test:false */
+/* global beforeAll:false, expect:false, test:false */
 const path = require("path");
 
 const fs = require("fs-extra");
@@ -32,11 +32,16 @@ test("it can convert markdown files into HTML", () => {
 });
 
 test("it can parse markdown properly", async () => {
-  const html = await fs.readFile(outputPath("tests/markdown-parser-test.html"), "utf8");
+  const html = await fs.readFile(
+    outputPath("tests/markdown-parser-test.html"),
+    "utf8"
+  );
 
-  const { document } = (new JSDOM(html)).window;
+  const { document } = new JSDOM(html).window;
 
-  expect(document.querySelector("h2").textContent).toMatch(/Markdown Parser Test/i);
+  expect(document.querySelector("h2").textContent).toMatch(
+    /Markdown Parser Test/i
+  );
   expect(document.querySelector("p").textContent).toMatch(/paragraph/i);
 
   const link = document.querySelectorAll("a")[1];
@@ -54,7 +59,9 @@ test("it can parse markdown properly", async () => {
   expect(list[0].textContent).toMatch("li1");
   expect(list[1].textContent).toMatch("li2");
 
-  expect(document.querySelector("blockquote").textContent).toMatch(/blockquote/i);
+  expect(document.querySelector("blockquote").textContent).toMatch(
+    /blockquote/i
+  );
 
   const img = document.querySelector("img");
   expect(img.src).toMatch(/example\.com/i);
@@ -67,7 +74,7 @@ test("it can parse markdown properly", async () => {
 test("it can generate collection page", async () => {
   const html = await fs.readFile(outputPath("posts/index.html"), "utf8");
 
-  const { document } = (new JSDOM(html)).window;
+  const { document } = new JSDOM(html).window;
 
   const lists = document.querySelectorAll("li");
   expect(lists).toHaveLength(2);
@@ -82,7 +89,7 @@ test("it can generate collection page", async () => {
 test("it can access front matter from the template", async () => {
   const html = await fs.readFile(outputPath("about.html"), "utf8");
 
-  const { document } = (new JSDOM(html)).window;
+  const { document } = new JSDOM(html).window;
 
   expect(document.querySelector("h1").textContent).toMatch(/About/i);
 });
@@ -90,7 +97,7 @@ test("it can access front matter from the template", async () => {
 test("it can use custom template", async () => {
   const html = await fs.readFile(outputPath("index.html"), "utf8");
 
-  const { document } = (new JSDOM(html)).window;
+  const { document } = new JSDOM(html).window;
 
   expect(document.querySelector("h1").textContent).toMatch(/Index Template/i);
 });
@@ -100,15 +107,19 @@ test("it can process css file", async () => {
 
   const css = await fs.readFile(outputPath(`assets/${CSS_FILENAME}`), "utf8");
 
-  expect(css).toMatch(/body\{font-size:16px;font-family:monospace;background:#fafafa\}/i);
+  expect(css).toMatch(
+    /body\{font-size:16px;font-family:monospace;background:#fafafa\}/i
+  );
 });
 
 test("it can access front matter from the template", async () => {
   const html = await fs.readFile(outputPath("posts/foo.html"), "utf8");
 
-  const { document } = (new JSDOM(html)).window;
+  const { document } = new JSDOM(html).window;
 
-  expect(document.querySelector("link").href).toBe(`/blog/assets/${CSS_FILENAME}`);
+  expect(document.querySelector("link").href).toBe(
+    `/blog/assets/${CSS_FILENAME}`
+  );
 });
 
 test("it can copy static file", () => {
