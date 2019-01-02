@@ -10,7 +10,7 @@ class Renderer {
    */
   constructor(config) {
     this.config = config;
-    this.env = nunjucks.configure(config.templatesDir);
+    this.env = nunjucks.configure(config.templatesPath);
 
     this.env.addGlobal("config", this.config);
     this.env.addFilter("absoluteUrl", path => this.config.getUrl(path));
@@ -30,18 +30,7 @@ class Renderer {
    * @return {String}
    */
   render(template, data = {}) {
-    return this.env.render(template, data);
-  }
-
-  /**
-   * Render the template and write to file.
-   * @param  {String} outputPath  - The path to save the file.
-   * @param  {String} template    - The template to render.
-   * @param  {Object} data        - The view data to render.
-   * @return {String}
-   */
-  async writeHtml(outputPath, template, data = {}) {
-    let str = this.render(template, data);
+    let str = this.env.render(template, data);
 
     if (this.config.isProduction()) {
       str = minifier.minify(str, {
@@ -60,6 +49,19 @@ class Renderer {
       `
       );
     }
+
+    return str;
+  }
+
+  /**
+   * Render the template and write it to a file.
+   * @param  {String} outputPath  - The path to save the file.
+   * @param  {String} template    - The template to render.
+   * @param  {Object} data        - The view data to render.
+   * @return {String}
+   */
+  async writeHtml(outputPath, template, data = {}) {
+    const str = this.render(template, data);
 
     await fs.outputFile(outputPath, str);
 
