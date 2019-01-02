@@ -1,6 +1,8 @@
 const path = require("path");
 const { URL } = require("url");
 
+const PRODUCTION = "production";
+
 const PROTOCOL = /^http[s]?:\/\//i;
 const LEADING_SLASH = /^\//;
 const LEADING_AND_TRAILING_SLASHES = /(^\/|\/$)/g;
@@ -8,22 +10,48 @@ const LEADING_AND_TRAILING_SLASHES = /(^\/|\/$)/g;
 class Config {
   /**
    * Create new config instance.
-   * @param  {String} options.basePath - The site base path.
-   * @param  {Object} options.data     - The config data.
+   * @param {Object} options - The site configuration options.
    */
-  constructor({ basePath = process.cwd(), ...data } = {}) {
-    this.basePath = basePath;
+  constructor(options = {}) {
+    this.options = { ...Config.defaultOptions, ...options };
 
-    this.data = this.formatData({
-      ...Config.defaultData,
-      ...data
-    });
+    this.parseOptions(this.options);
 
     return new Proxy(this, {
       get(config, prop) {
-        return prop in config ? config[prop] : config.data[prop];
+        return prop in config ? config[prop] : config.options[prop];
       }
     });
+  }
+
+  /**
+   * Parse the config options.
+   * @param  {Object} options - The config options.
+   * @return {Void}
+   */
+  parseOptions(options) {
+    this.basePath = path.resolve(options.basePath);
+    this.sourcePath = path.resolve(this.basePath, options.sourceDir);
+    this.outputPath = path.resolve(this.basePath, options.outputDir);
+    this.templatesPath = path.resolve(this.sourcePath, options.templatesDir);
+    this.assetsPath = path.resolve(this.sourcePath, options.assetsDir);
+
+    this.url = PROTOCOL.test(options.url)
+      ? options.url
+      : `http://${options.url}`;
+
+    const urlObj = new URL(this.url);
+
+    this.port = urlObj.port ? parseInt(urlObj.port, 10) : 4000;
+
+    if (this.isProduction()) {
+      this.origin = urlObj.origin;
+      const pathname = urlObj.pathname.replace(LEADING_AND_TRAILING_SLASHES, "");
+      this.pathname = pathname ? `/${pathname}` : "";
+    } else {
+      this.origin = `http://localhost:${this.port}`;
+      this.pathname = "";
+    }
   }
 
   /**
@@ -37,8 +65,8 @@ class Config {
     const cleanRelativeUrl = relativeUrl.replace(LEADING_SLASH, "");
 
     return cleanRelativeUrl
-      ? `${this.data.origin}/${cleanRelativeUrl}`
-      : this.data.origin;
+      ? `${this.origin}/${cleanRelativeUrl}`
+      : this.origin;
   }
 
   /**
@@ -47,7 +75,7 @@ class Config {
    * @return {String}
    */
   getRelativeUrl(p = "/") {
-    const pathPrefix = this.data.pathname ? `${this.data.pathname}/` : "/";
+    const pathPrefix = this.pathname ? `${this.pathname}/` : "/";
 
     const cleanPath = p.replace(LEADING_SLASH, "");
 
@@ -59,78 +87,25 @@ class Config {
    * @return {Boolean}
    */
   isProduction() {
-    return this.data.env.toLowerCase() === "production";
+    return this.options.env.toLowerCase() === "production";
   }
 
   /**
-   * Format the config data.
-   * @param  {Object} data - The config data.
-   * @return {Object} The formatted config data.
-   */
-  formatData(data) {
-    // Directories.
-    const sourceDir = this.resolvePath(data.sourceDir);
-    const outputDir = this.resolvePath(data.outputDir);
-    const templatesDir = path.resolve(sourceDir, data.templatesDir);
-    const assetsDir = path.resolve(sourceDir, data.assetsDir);
-
-    const url = PROTOCOL.test(data.url) ? data.url : `http://${data.url}`;
-
-    let { origin, port, pathname } = new URL(url);
-
-    port = port ? parseInt(port, 10) : 4000;
-
-    if (data.env.toLowerCase() === "production") {
-      pathname = pathname.replace(LEADING_AND_TRAILING_SLASHES, "");
-
-      if (pathname) {
-        pathname = `/${pathname}`;
-      }
-    } else {
-      origin = `http://localhost:${port}`;
-      pathname = "";
-    }
-
-    return {
-      ...data,
-      sourceDir,
-      outputDir,
-      templatesDir,
-      assetsDir,
-      url,
-      origin,
-      port,
-      pathname
-    };
-  }
-
-  /**
-   * Resolve the given path.
-   * @param  {String} p - The path to resolve.
-   * @return {String} The resolved path.
-   */
-  resolvePath(p) {
-    if (path.isAbsolute(p)) {
-      return p;
-    }
-
-    return path.resolve(this.basePath, p);
-  }
-
-  /**
-   * Default config data.
+   * Get the default config options.
    * @return {Object}
    */
-  static get defaultData() {
+  static get defaultOptions() {
     return {
-      env: process.env.NODE_ENV ? process.env.NODE_ENV : "production",
+      env: process.env.NODE_ENV ? process.env.NODE_ENV : PRODUCTION,
+      watch: false,
       url: "http://localhost:4000",
+      basePath: process.cwd(),
       sourceDir: "src",
       outputDir: "public",
       templatesDir: "templates",
       assetsDir: "assets",
-      defaultTemplate: "post.html",
-      defaultCollectionTemplate: "collection.html",
+      defaultTemplate: "post.njk",
+      defaultCollectionTemplate: "collection.njk",
       copyFiles: ["images/**", "robot.txt", "**/*.html"],
       postcssPresetEnv: {
         stage: 3,
