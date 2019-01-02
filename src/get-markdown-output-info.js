@@ -4,21 +4,21 @@ const INDEX_FILENAME = /index.html$/i;
 
 /**
  * Get the output info.
- * @param  {String} options.sourcePath - The source absolute path.
- * @param  {Config} options.config - The Config instance.
+ * @param  {String} markdownPath - The markdown source path.
+ * @param  {Config} config - The Config instance.
  * @return {Object}
  */
-const getOutputInfo = (sourcePath, config) => {
+const getMarkdownOutputInfo = (markdownPath, config) => {
   // Output path.
-  const sourcePathRelative = path.relative(config.sourceDir, sourcePath);
+  const sourcePathRelative = path.relative(config.sourcePath, markdownPath);
   const { base, ...sourcePathRelativeObj } = path.parse(sourcePathRelative);
   const outputPathRelative = path.format({
     ...sourcePathRelativeObj,
     ext: ".html"
   });
-  const outputPath = path.join(config.outputDir, outputPathRelative);
+  const outputPath = path.join(config.outputPath, outputPathRelative);
 
-  // Collection dir.
+  // Collection name.
   const { dir } = path.parse(outputPathRelative);
   const collectionName = dir || "root";
 
@@ -38,4 +38,4 @@ const getOutputInfo = (sourcePath, config) => {
   };
 };
 
-module.exports = getOutputInfo;
+module.exports = getMarkdownOutputInfo;
