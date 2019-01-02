@@ -1,4 +1,3 @@
-/* eslint no-console: "off" */
 const build = require("./build");
 const runServer = require("./run-server");
 
@@ -10,12 +9,10 @@ const runServer = require("./run-server");
 const serve = async (options = {}) => {
   const { config } = await build({ ...options, env: "development" });
 
-  await runServer({
-    publicDir: config.outputDir,
+  runServer({
+    publicDir: config.outputPath,
     port: config.port
   });
-
-  console.log(`⚡️ Server is running: http://localhost:${config.port}`);
 };
 
 module.exports = serve;
