@@ -33,17 +33,25 @@ const writePage = async (page, { config, renderer, data }) => {
 const processMarkdownFiles = async ({ config, renderer }) => {
   const data = await parseMarkdownFiles(config);
 
-  await Promise.all(data.posts.map(page => writePage(page, {
-    config,
-    renderer,
-    data
-  })));
+  await Promise.all(
+    data.posts.map(page =>
+      writePage(page, {
+        config,
+        renderer,
+        data
+      })
+    )
+  );
 
-  await Promise.all(data.collectionPages.map(page => writePage(page, {
-    config,
-    renderer,
-    data
-  })));
+  await Promise.all(
+    data.collectionPages.map(page =>
+      writePage(page, {
+        config,
+        renderer,
+        data
+      })
+    )
+  );
 
   return data;
 };

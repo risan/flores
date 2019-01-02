@@ -28,7 +28,10 @@ const build = async (options = {}) => {
 
   renderer.addGlobal("assets", assets);
 
-  const { posts, collectionPages } = await processMarkdownFiles({ config, renderer });
+  const { posts, collectionPages } = await processMarkdownFiles({
+    config,
+    renderer
+  });
 
   console.log(`✅ ${posts.length} markdown posts are converted.`);
   console.log(`✅ ${collectionPages.length} collection pages are generated.`);

@@ -46,7 +46,10 @@ class Config {
 
     if (this.isProduction()) {
       this.origin = urlObj.origin;
-      const pathname = urlObj.pathname.replace(LEADING_AND_TRAILING_SLASHES, "");
+      const pathname = urlObj.pathname.replace(
+        LEADING_AND_TRAILING_SLASHES,
+        ""
+      );
       this.pathname = pathname ? `/${pathname}` : "";
     } else {
       this.origin = `http://localhost:${this.port}`;

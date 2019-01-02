@@ -46,7 +46,10 @@ const watch = async (options = {}) => {
   const reloadBrowser = () => socketIo.emit("flores.reloadBrowser");
 
   const assetsDir = `${path.relative(config.sourcePath, config.assetsPath)}/`;
-  const templatesDir = `${path.relative(config.sourcePath, config.templatesPath)}/`;
+  const templatesDir = `${path.relative(
+    config.sourcePath,
+    config.templatesPath
+  )}/`;
 
   /**
    * Get file type for the given path.
@@ -66,10 +69,7 @@ const watch = async (options = {}) => {
       return MARKDOWN_FILE;
     }
 
-    if (
-      TEMPLATE_EXTENSIONS.includes(extension) &&
-      p.startsWith(templatesDir)
-    ) {
+    if (TEMPLATE_EXTENSIONS.includes(extension) && p.startsWith(templatesDir)) {
       return TEMPLATE_FILE;
     }
 
@@ -90,7 +90,10 @@ const watch = async (options = {}) => {
       renderer.clearCache();
     }
 
-    const { posts, collectionPages } = await processMarkdownFiles({ config, renderer });
+    const { posts, collectionPages } = await processMarkdownFiles({
+      config,
+      renderer
+    });
 
     console.log(`✅ ${posts.length} markdown posts are converted.`);
     console.log(`✅ ${collectionPages.length} collection pages are generated.`);
