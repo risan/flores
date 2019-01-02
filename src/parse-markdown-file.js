@@ -4,6 +4,8 @@ const md = require("markdown-it")();
 const mdAnchor = require("markdown-it-anchor");
 const mdToc = require("markdown-it-table-of-contents");
 
+const getMarkdownOutputInfo = require("./get-markdown-output-info");
+
 md.use(mdAnchor, { permalink: true, permalinkBefore: true }).use(mdToc, {
   containerHeaderHtml: "<h2>Table of Contents</h2>",
   includeLevel: [2, 3, 4, 5]
@@ -12,16 +14,20 @@ md.use(mdAnchor, { permalink: true, permalinkBefore: true }).use(mdToc, {
 /**
  * Parse markdown file.
  * @param  {String} path - The markdown file path to parse.
- * @return {Object} Return the frontMatter and the rendered HTML.
+ * @param  {Object} config - The Config instance.
+ * @return {Object} Return the frontMatter, the rendered HTML, and output info.
  */
-const parseMarkdownFile = async path => {
+const parseMarkdownFile = async (path, config) => {
   const source = await fs.readFile(path, "utf8");
 
   const { attributes, body } = fm(source);
 
+  const outputInfo = getMarkdownOutputInfo(path, config);
+
   return {
     frontMatter: attributes,
-    html: md.render(body)
+    content: md.render(body),
+    ...outputInfo
   };
 };
 

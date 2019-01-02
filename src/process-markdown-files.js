@@ -1,21 +1,49 @@
-const globby = require("globby");
-const processMarkdownFile = require("./process-markdown-file");
+const parseMarkdownFiles = require("./parse-markdown-files");
+
+/**
+ * Write the page.
+ * @param  {Object} page             - The page data.
+ * @param  {Config} options.config   - The Config instance.
+ * @param  {Renderer} options.renderer - The Renderer instance.
+ * @param  {Object} options.data     - All website pages data.
+ * @return {Promise}
+ */
+const writePage = async (page, { config, renderer, data }) => {
+  const defaultTemplate = page.frontMatter.collection
+    ? config.defaultCollectionTemplate
+    : config.defaultTemplate;
+
+  const template = page.frontMatter.template
+    ? page.frontMatter.template
+    : defaultTemplate;
+
+  return renderer.writeHtml(page.outputPath, template, {
+    ...data,
+    ...page,
+    collection: data.collections[page.collectionName]
+  });
+};
 
 /**
  * Process all markdown files.
  * @param  {Config} options.config   - The Config instance.
  * @param  {Renderer} options.renderer - The Renderer instance.
- * @return {Array}
+ * @return {Object}
  */
 const processMarkdownFiles = async ({ config, renderer }) => {
-  const files = await globby("**/*.(md|markdown)", {
-    cwd: config.sourceDir,
-    absolute: true
-  });
+  const data = await parseMarkdownFiles(config);
 
-  const data = await Promise.all(
-    files.map(file => processMarkdownFile(file, { config, renderer }))
-  );
+  await Promise.all(data.posts.map(page => writePage(page, {
+    config,
+    renderer,
+    data
+  })));
+
+  await Promise.all(data.collectionPages.map(page => writePage(page, {
+    config,
+    renderer,
+    data
+  })));
 
   return data;
 };
