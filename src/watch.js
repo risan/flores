@@ -9,7 +9,6 @@ const mm = require("micromatch");
 const build = require("./build");
 const generateSitemap = require("./generate-sitemap");
 const processCssFiles = require("./process-css-files");
-const processCollectionPages = require("./process-collection-pages");
 const processMarkdownFiles = require("./process-markdown-files");
 const runServer = require("./run-server");
 
@@ -20,7 +19,7 @@ const STATIC_FILE = "static";
 
 const CSS_EXTENSION = ".css";
 const MARKDOWN_EXTENSIONS = [".md", ".markdown"];
-const TEMPLATE_EXTENSIONS = [".html", ".njs"];
+const TEMPLATE_EXTENSIONS = [".html", ".njk"];
 
 /**
  * Run the file watcher.
@@ -35,7 +34,7 @@ const watch = async (options = {}) => {
   });
 
   const { socketIo } = await runServer({
-    publicDir: config.outputDir,
+    publicDir: config.outputPath,
     port: config.port,
     watch: true
   });
@@ -46,11 +45,8 @@ const watch = async (options = {}) => {
    */
   const reloadBrowser = () => socketIo.emit("flores.reloadBrowser");
 
-  const assetsPath = `${path.relative(config.sourceDir, config.assetsDir)}/`;
-  const templatesPath = `${path.relative(
-    config.sourceDir,
-    config.templatesDir
-  )}/`;
+  const assetsDir = `${path.relative(config.sourcePath, config.assetsPath)}/`;
+  const templatesDir = `${path.relative(config.sourcePath, config.templatesPath)}/`;
 
   /**
    * Get file type for the given path.
@@ -62,7 +58,7 @@ const watch = async (options = {}) => {
 
     const extension = ext.toLowerCase();
 
-    if (extension === CSS_EXTENSION && p.startsWith(assetsPath)) {
+    if (extension === CSS_EXTENSION && p.startsWith(assetsDir)) {
       return CSS_FILE;
     }
 
@@ -72,7 +68,7 @@ const watch = async (options = {}) => {
 
     if (
       TEMPLATE_EXTENSIONS.includes(extension) &&
-      p.startsWith(templatesPath)
+      p.startsWith(templatesDir)
     ) {
       return TEMPLATE_FILE;
     }
@@ -94,14 +90,10 @@ const watch = async (options = {}) => {
       renderer.clearCache();
     }
 
-    const pages = await processMarkdownFiles({ config, renderer });
+    const { posts, collectionPages } = await processMarkdownFiles({ config, renderer });
 
-    const { posts, collectionPages } = await processCollectionPages(pages, {
-      config,
-      renderer
-    });
-
-    console.log(`✅ ${pages.length} markdown files are converted.`);
+    console.log(`✅ ${posts.length} markdown posts are converted.`);
+    console.log(`✅ ${collectionPages.length} collection pages are generated.`);
 
     await generateSitemap({ config, posts, collectionPages });
 
@@ -135,14 +127,14 @@ const watch = async (options = {}) => {
    * @return {Promise}
    */
   const copyFile = async p =>
-    fs.copy(path.join(config.sourceDir, p), path.join(config.outputDir, p));
+    fs.copy(path.join(config.sourcePath, p), path.join(config.outputPath, p));
 
   /**
    * Remove file from the output directory.
    * @param  {String} p - The file path to remove.
    * @return {Promise}
    */
-  const removeFile = async p => fs.remove(path.join(config.outputDir, p));
+  const removeFile = async p => fs.remove(path.join(config.outputPath, p));
 
   const processCssDebounced = debounce(processCss, 500);
   const processMarkdownDebounced = debounce(processMarkdown, 500);
@@ -150,7 +142,7 @@ const watch = async (options = {}) => {
   const watcher = chokidar.watch(".", {
     ignored: /(^|[/\\])\../,
     ignoreInitial: true,
-    cwd: config.sourceDir
+    cwd: config.sourcePath
   });
 
   watcher.on("ready", () => console.log("👀 watcher is ready..."));
