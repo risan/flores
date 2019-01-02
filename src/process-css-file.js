@@ -16,8 +16,8 @@ const presetEnv = require("postcss-preset-env");
 const processCssFile = async (file, config) => {
   const css = await fs.readFile(file, "utf8");
 
-  const relativePath = path.relative(config.sourceDir, file);
-  let outputPath = path.join(config.outputDir, relativePath);
+  const relativePath = path.relative(config.sourcePath, file);
+  let outputPath = path.join(config.outputPath, relativePath);
 
   const processor = postcss([atImport, presetEnv(config.postcssPresetEnv)]);
 
@@ -34,7 +34,7 @@ const processCssFile = async (file, config) => {
   if (config.isProduction()) {
     const hash = crypto.createHash("md5");
 
-    hash.update(css);
+    hash.update(result.css);
 
     const outputHash = hash.digest("hex").substring(0, 10);
 
