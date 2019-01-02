@@ -22,7 +22,8 @@
   },
   "scripts": {
     "lint": "eslint ./",
-    "lint-fix": "eslint ./ --fix"
+    "lint-fix": "eslint ./ --fix",
+    "test": "jest"
   },
   "dependencies": {
     "chokidar": "^2.0.4",
