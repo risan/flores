@@ -51,9 +51,9 @@ const generateSitemap = async ({ posts, collectionPages, config }) => {
     urls: [...collectionPageUrls.filter(Boolean), ...postUrls.filter(Boolean)]
   });
 
-  const outputPath = path.join(config.outputDir, "sitemap.xml");
+  const sitemapPath = path.join(config.outputPath, "sitemap.xml");
 
-  return fs.outputFile(outputPath, sitemap.toString());
+  return fs.outputFile(sitemapPath, sitemap.toString());
 };
 
 module.exports = generateSitemap;

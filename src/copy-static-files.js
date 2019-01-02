@@ -10,14 +10,14 @@ const globby = require("globby");
  */
 const copyStaticFiles = async config => {
   const files = await globby(config.copyFiles, {
-    cwd: config.sourceDir
+    cwd: config.sourcePath
   });
 
   await Promise.all(
     files.map(file =>
       fs.copy(
-        path.join(config.sourceDir, file),
-        path.join(config.outputDir, file)
+        path.join(config.sourcePath, file),
+        path.join(config.outputPath, file)
       )
     )
   );
