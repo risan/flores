@@ -1,5 +1,8 @@
-# Flores [WIP]
+# Flores
 
+[![Build Status](https://badgen.net/travis/risan/flores)](https://travis-ci.org/risan/flores)
+[![Test Covarage](https://badgen.net/codecov/c/github/risan/flores)](https://codecov.io/gh/risan/flores)
+[![Greenkeeper](https://badges.greenkeeper.io/risan/flores.svg)](https://greenkeeper.io)
 [![Latest Version](https://badgen.net/npm/v/flores)](https://www.npmjs.com/package/flores)
 
 Minimalist static site generator.
@@ -16,7 +19,7 @@ $ npm install flores
 const flores = require("flores");
 
 (async () => {
-  await flores.build("/path/to/source");
+  await flores.build();
 })();
 ```
 
@@ -24,39 +27,55 @@ const flores = require("flores");
 
 ### `flores.build`
 
-Build the site for production.
+Generate the website.
 
 ```js
-flores.build([basePath])
+flores.build([options])
 ```
 
 #### Parameters
 
-* `basePath` (`String`): The site source path, default to the current working directory.
+* `options` (`Object`): The [configuration options](#configuration-options).
 
 ### `flores.serve`
 
-Build the site and start the development server.
+Generate the website and start the development server.
 
 ```js
-flores.serve([basePath])
+flores.serve([options])
 ```
 
 #### Parameters
 
-* `basePath` (`String`): The site source path, default to the current working directory.
+* `options` (`Object`): The [configuration options](#configuration-options).
 
 ### `flores.watch`
 
-Start the development server and the file watcher.
+Start the development server and watch for the file changes. It will automatically refresh the browser on file changes.
 
 ```js
-flores.watch([basePath])
+flores.watch([options])
 ```
 
 #### Parameters
 
-* `basePath` (`String`): The site source path, default to the current working directory.
+* `options` (`Object`): The [configuration options](#configuration-options).
+
+### Configuration Options
+
+Configuration options is an optional `Object` that you can pass to `build`, `serve`, or `watch` methods.
+
+* `env` (`String`): The environment name, default to `process.env.NODE_ENV`. If the `NODE_ENV` environment variable is not set, `production` will be set. Note that for `serve` and `watch` methods, the `env` value will always be set to `development`.
+* `url` (`String`): The website URL, default to `http://localhost:4000`.
+* `basePath` (`String`): The base path of your website project directory, default to `process.cwd()`.
+* `sourceDir` (`String`): The directory for the website source relative to the `basePath`, default to `src`.
+* `outputDir` (`String`): The directory for the generated website output relative to the `basePath`, default to `public`,
+* `templatesDir` (`String`): The templates directory relative to the `sourceDir`, default to `templates`.
+* `assetsDir` (`String`): The CSS assets directory relative to the `sourceDir`, default to `assets`.
+* `defaultTemplate` (`String`): The default template name for the markdown post, default to `post.njk`. You can override the template for individual post by providing the `template` field on the post's front matter.
+* `defaultCollectionTemplate` (`String`): The default template name for the markdown post collection page, default to `collection.njk`. You can override the template for individual post collection page by providing the `template` field on the page's front matter.
+* `copyFiles` (`Array`): List of files or file patterns to copy, default to: `["images/**", "robot.txt", "**/*.html"]`.
+* `postcssPresetEnv` (`Object`): [PostCSS Preset Env options](https://github.com/csstools/postcss-preset-env#options), default to: `{ stage: 3, preserve: false }`.
 
 ## License
 
