@@ -29,8 +29,7 @@ const processCssFile = async (file, config) => {
   }
 
   const result = await processor.process(css, {
-    from: path.relative(config.basePath, file),
-    to: path.relative(config.basePath, outputPath),
+    from: file,
     map: !config.isProduction()
   });
 
