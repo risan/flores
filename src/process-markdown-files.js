@@ -26,12 +26,13 @@ const writePage = async (page, { config, renderer, data }) => {
 
 /**
  * Process all markdown files.
- * @param  {Config} options.config   - The Config instance.
+ * @param  {Config} options.config - The Config instance.
+ * @param  {MarkdownParser} options.markdownParser - The MarkdownParser instance.
  * @param  {Renderer} options.renderer - The Renderer instance.
  * @return {Object}
  */
-const processMarkdownFiles = async ({ config, renderer }) => {
-  const data = await parseMarkdownFiles(config);
+const processMarkdownFiles = async ({ config, markdownParser, renderer }) => {
+  const data = await parseMarkdownFiles({ config, markdownParser });
 
   await Promise.all(
     data.posts.map(page =>

@@ -110,6 +110,13 @@ class Config {
       defaultTemplate: "post.njk",
       defaultCollectionTemplate: "collection.njk",
       copyFiles: ["images/**", "robot.txt", "**/*.html"],
+      markdownAnchor: {
+        permalink: true
+      },
+      markdownToc: {
+        containerHeaderHtml: "<h2>Table of Contents</h2>",
+        includeLevel: [2, 3, 4]
+      },
       postcssPresetEnv: {
         stage: 3,
         preserve: false

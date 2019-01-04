@@ -27,7 +27,7 @@ const TEMPLATE_EXTENSIONS = [".html", ".njk"];
  * @return {Promise}
  */
 const watch = async (options = {}) => {
-  const { config, renderer } = await build({
+  const { config, markdownParser, renderer } = await build({
     ...options,
     env: "development",
     watch: true
@@ -92,6 +92,7 @@ const watch = async (options = {}) => {
 
     const { posts, collectionPages } = await processMarkdownFiles({
       config,
+      markdownParser,
       renderer
     });
 

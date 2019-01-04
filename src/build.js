@@ -4,6 +4,7 @@ const fs = require("fs-extra");
 const Config = require("./config");
 const copyStaticFiles = require("./copy-static-files");
 const generateSitemap = require("./generate-sitemap");
+const MarkdownParser = require("./markdown-parser");
 const processCssFiles = require("./process-css-files");
 const processMarkdownFiles = require("./process-markdown-files");
 const Renderer = require("./renderer");
@@ -18,6 +19,11 @@ const build = async (options = {}) => {
 
   console.log(`⏳ Generating website to: ${config.outputPath}`);
 
+  const markdownParser = new MarkdownParser({
+    anchor: config.markdownAnchor,
+    toc: config.markdownToc
+  });
+
   const renderer = new Renderer(config);
 
   await fs.remove(config.outputPath);
@@ -30,6 +36,7 @@ const build = async (options = {}) => {
 
   const { posts, collectionPages } = await processMarkdownFiles({
     config,
+    markdownParser,
     renderer
   });
 
@@ -46,7 +53,7 @@ const build = async (options = {}) => {
 
   console.log(`🎉 Build complete!`);
 
-  return { config, renderer };
+  return { config, markdownParser, renderer };
 };
 
 module.exports = build;
