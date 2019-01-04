@@ -1,5 +1,5 @@
 const fs = require("fs-extra");
-const formatDate = require('date-fns/format');
+const formatDate = require("date-fns/format");
 const minifier = require("html-minifier");
 const nunjucks = require("nunjucks");
 
