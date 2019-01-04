@@ -1,4 +1,5 @@
 const fs = require("fs-extra");
+const formatDate = require('date-fns/format');
 const minifier = require("html-minifier");
 const nunjucks = require("nunjucks");
 
@@ -15,6 +16,10 @@ class Renderer {
     this.env.addGlobal("config", this.config);
     this.env.addFilter("absoluteUrl", path => this.config.getUrl(path));
     this.env.addFilter("relativeUrl", path => this.config.getRelativeUrl(path));
+    this.env.addFilter(
+      "formatDate",
+      (date, format = config.defaultDateFormat) => formatDate(date, format)
+    );
 
     return new Proxy(this, {
       get(renderer, prop) {
