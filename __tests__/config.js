@@ -9,6 +9,7 @@ test("it can get default options", () => {
     outputDir: "public",
     templatesDir: "templates",
     assetsDir: "assets",
+    defaultDateFormat: "YYYY-MM-DD HH:mm:ss",
     defaultTemplate: "post.njk",
     defaultCollectionTemplate: "collection.njk"
   });

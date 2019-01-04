@@ -107,6 +107,7 @@ class Config {
       outputDir: "public",
       templatesDir: "templates",
       assetsDir: "assets",
+      defaultDateFormat: "YYYY-MM-DD HH:mm:ss",
       defaultTemplate: "post.njk",
       defaultCollectionTemplate: "collection.njk",
       copyFiles: ["images/**", "robot.txt", "**/*.html"],
