@@ -1,10 +1,27 @@
 const fm = require("front-matter");
 const fs = require("fs-extra");
-const md = require("markdown-it")();
+const hljs = require("highlight.js");
+const markdownIt = require("markdown-it");
 const mdAnchor = require("markdown-it-anchor");
 const mdToc = require("markdown-it-table-of-contents");
 
 const getMarkdownOutputInfo = require("./get-markdown-output-info");
+
+const md = markdownIt({
+  highlight: (str, lang) => {
+    let result;
+
+    if (lang && hljs.getLanguage(lang)) {
+      result = hljs.highlight(lang, str, true);
+    } else {
+      result = hljs.highlightAuto(str);
+    }
+
+    return `<pre><code class="hljs ${result.language}">${
+      result.value
+    }</code></pre>`;
+  }
+});
 
 md.use(mdAnchor, { permalink: true, permalinkBefore: true }).use(mdToc, {
   containerHeaderHtml: "<h2>Table of Contents</h2>",
