@@ -16,6 +16,8 @@ test("it can get default options", () => {
   expect(Config.defaultOptions).toHaveProperty("env");
   expect(Config.defaultOptions).toHaveProperty("basePath");
   expect(Config.defaultOptions).toHaveProperty("copyFiles");
+  expect(Config.defaultOptions).toHaveProperty("markdownAnchor");
+  expect(Config.defaultOptions).toHaveProperty("markdownToc");
   expect(Config.defaultOptions).toHaveProperty("postcssPresetEnv.stage");
 });
 
