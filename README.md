@@ -26,7 +26,7 @@ const flores = require("flores");
 ## Features
 
 * Fast markdown parser with [GFM](https://github.github.com/gfm/) syntax using [`markdown-it`](https://github.com/markdown-it/markdown-it).
-* Create a website theme with rich and powerful (Nunjucks)[https://mozilla.github.io/nunjucks/] templating engine.
+* Create a website theme with rich and powerful [Nunjucks](https://mozilla.github.io/nunjucks/) templating engine.
 * Write modern CSS with [PostCSS](https://postcss.org/) and [`postcss-preset-env`](https://preset-env.cssdb.org/).
 * Syntax highlighting using [highlight.js](https://highlightjs.org/).
 * Automatically generates table of contents using [`markdown-it-table-of-contents`](https://github.com/Oktavilla/markdown-it-table-of-contents).
@@ -83,39 +83,40 @@ Configuration options is an optional `Object` that you can pass to `build`, `ser
 * **`outputDir`** (`String`): The directory where the generated website will be stored relative to the `basePath`, default to `public`,
 * **`templatesDir`** (`String`): The templates directory relative to the `sourceDir`, default to `templates`.
 * **`assetsDir`** (`String`): The CSS assets directory relative to the `sourceDir`, default to `assets`.
+* **`defaultDateFormat`** (`String`): The default date format to use, when using `dateFormat` filter, default to `YYYY-MM-DD HH:mm:ss`. Check [date-fns `format()` documentation](https://date-fns.org/docs/format) for all accepted format.
 * **`defaultTemplate`** (`String`): The default template name for the markdown post, default to `post.njk`. You can override the template for individual post by providing the `template` field on the post's front matter.
 * **`defaultCollectionTemplate`** (`String`): The default template name for the markdown post collection page, default to `collection.njk`. You can override the template for individual post collection page by providing the `template` field on the page's front matter.
 * **`copyFiles`** (`Array`): List of files or file patterns to copy, default to:
 
-```js
-["images/**", "robot.txt", "**/*.html"]`
-```
+  ```js
+  ["images/**", "robot.txt", "**/*.html"]`
+  ```
 
 * **`markdownAnchor`** (`Object`): The [`markdown-it-anchor` plugin options](https://github.com/valeriangalliat/markdown-it-anchor#usage), default to:
 
-```js
-{
-  permalink: true
-}
-```
+  ```js
+  {
+    permalink: true
+  }
+  ```
 
 * **`markdownToc`** (`Object`): The [`markdown-it-table-of-contents` plugin options](https://github.com/Oktavilla/markdown-it-table-of-contents#options), default to:
 
-```js
-{
-  containerHeaderHtml: "<h2>Table of Contents</h2>",
-  includeLevel: [2, 3, 4]
-}
-```
+  ```js
+  {
+    containerHeaderHtml: "<h2>Table of Contents</h2>",
+    includeLevel: [2, 3, 4]
+  }
+  ```
 
 * `postcssPresetEnv` (`Object`): [PostCSS Preset Env options](https://github.com/csstools/postcss-preset-env#options), default to:
 
-```js
-{
-  stage: 3,
-  preserve: false
-}
-```
+  ```js
+  {
+    stage: 3,
+    preserve: false
+  }
+  ```
 
 ## Related
 
