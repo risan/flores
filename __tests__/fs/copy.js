@@ -3,12 +3,12 @@ const path = require("path");
 
 const fs = require("fs-extra");
 
-const copyFile = require("../src/copy-file");
+const copy = require("../../src/fs/copy");
 
-const SOURCE_PATH = path.resolve(__dirname, "fixtures/src/robot.txt");
+const SOURCE_PATH = path.resolve(__dirname, "../fixtures/src/robot.txt");
 const DESTINATION_PATH = path.resolve(
   __dirname,
-  "fixtures/copy-file-test/robot.txt"
+  "../fixtures/copy-file-test/robot.txt"
 );
 
 beforeEach(() => fs.remove(DESTINATION_PATH));
@@ -19,7 +19,7 @@ test("it can copy file", async () => {
   let destExists = await fs.pathExists(DESTINATION_PATH);
   expect(destExists).toBe(false);
 
-  await copyFile(SOURCE_PATH, DESTINATION_PATH);
+  await copy(SOURCE_PATH, DESTINATION_PATH);
 
   destExists = await fs.pathExists(DESTINATION_PATH);
   expect(destExists).toBe(true);

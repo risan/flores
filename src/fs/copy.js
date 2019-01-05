@@ -6,6 +6,6 @@ const fs = require("fs-extra");
  * @param  {String} destination - The destination path.
  * @return {Promise}
  */
-const copyFile = (source, destination) => fs.copy(source, destination);
+const copy = (source, destination) => fs.copy(source, destination);
 
-module.exports = copyFile;
+module.exports = copy;
