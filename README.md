@@ -7,22 +7,6 @@
 
 Minimalist static site generator.
 
-## Installation
-
-```bash
-$ npm install flores
-```
-
-## Usage
-
-```js
-const flores = require("flores");
-
-(async () => {
-  await flores.build();
-})();
-```
-
 ## Features
 
 * Fast markdown parser with [GFM](https://github.github.com/gfm/) syntax using [`markdown-it`](https://github.com/markdown-it/markdown-it).
@@ -33,6 +17,120 @@ const flores = require("flores");
 * Automatic sitemap generation using [`sitemap.js`](https://github.com/ekalinin/sitemap.js).
 * Built-in web server for previewing your generated website using [express](https://expressjs.com/).
 * Development server with file watcher that are able to regenerate the website and reload the browser automatically.
+
+## Getting Started
+
+### 1. Download the Starter Template
+
+Run the following command on your terminal to download [Flores starter template](https://github.com/risan/flores-starter).
+
+```bash
+$ wget https://github.com/risan/flores-starter/archive/master.zip \
+    -O master.zip && \
+    unzip master.zip && \
+    mv flores-starter-master my-blog && \
+    rm master.zip
+```
+
+It will automatically download the starter template and unzip it to `my-blog` directory.
+
+Or you can also [download the starter template](https://github.com/risan/flores-starter/archive/master.zip) and unzip it manually.
+
+### 2. Install All Dependencies
+
+Within your project directory, run the following command to install all dependencies:
+
+```bash
+$ npm install
+```
+
+### 3. Generate the Website
+
+Run the following command to generate your website for production:
+
+```bash
+$ npm run build
+```
+
+For development purpose, you can preview your generated website with the built-in server:
+
+```bash
+$ npm run serve
+```
+
+Flores also comes with file watcher that can rebuild your website and reload the browser automatically:
+
+```bash
+$ npm run build
+```
+
+## Guide
+
+### Directory Structures Overview
+
+By default Flores project has the following directory structures.
+
+```txt
+|- src/
+|  |- assets/
+|  |- templates/
+|  |  |- collection.njk
+|  |  |- post.njk
+|  |
+|  |- category-1/
+|  |  |- foo.md
+|  |
+|  |- category-2
+|  |  |- bar.md
+|  |
+|  |- baz.md
+|
+|- public/
+|- site.config.js
+```
+
+* `/src`: This is where your website data resides (markdown files, css files, templates, images, etc).
+* `/assets`: This is where you store your CSS files.
+* `/templates`: This is where you store your template files.
+
+* `/category-1` and `/category-2`: Store your markdown file within a directory to create a hierarchical category. The URL for your post will follow the markdown file location:
+
+  ```txt
+  /src/category-1/foo.md => /category-1/foo.html
+  /src/category-2/bar.md => /category-2/bar.html
+  /src/baz.md => /baz.html
+  ```
+
+* `/public`: This is where the generated website will be stored.
+* `site.config.js`: The configuration file.
+
+### Available Commands
+
+There are three available commands: `build`, `serve`, and `watch`.
+
+#### `build`
+
+Run the `build` command to generate the website for production. By default the website will be stored in `/public` directory.
+
+```bash
+$ npm run build
+```
+
+#### `serve`
+
+Run the `serve` command to preview your generate website. This command will generate the website and start the built-in [Express](https://expressjs.com/) server. By default your website will be served on [localhost:4000](http://localhost:4000).
+
+```bash
+$ npm run serve
+```
+
+#### `watch`
+
+Run the `watch` command to start the development server and the file watcher feature. It can regenerate the website and reload the browser automatically on file changes.
+
+```bash
+$ npm run watch
+```
 
 ## API
 
@@ -121,6 +219,7 @@ Configuration options is an optional `Object` that you can pass to `build`, `ser
 ## Related
 
 * [flores-cli](https://github.com/risan/flores-cli): The CLI tool for this module.
+* [flores-starter](https://github.com/risan/flores-starter): Flores starter template for blog.
 
 ## License
 
