@@ -6,21 +6,21 @@ const StaticFileProcessor = require("../src/static-file-processor");
 jest.mock("../src/fs/copy");
 jest.mock("../src/fs/glob-copy");
 
-test("it can access patterns, source, and destination properties", () => {
+test("it can access patterns, source, and output properties", () => {
   const staticFileProcessor = new StaticFileProcessor({
     patterns: "**/*.html",
     source: "/src",
-    destination: "/dest"
+    output: "/dest"
   });
 
   expect(staticFileProcessor.patterns).toBe("**/*.html");
   expect(staticFileProcessor.source).toBe("/src");
-  expect(staticFileProcessor.destination).toBe("/dest");
+  expect(staticFileProcessor.output).toBe("/dest");
 });
 
 test("it has default patterns value", () => {
   const staticFileProcessor = new StaticFileProcessor({
-    destination: "/dest"
+    output: "/dest"
   });
 
   expect(Array.isArray(staticFileProcessor.patterns)).toBe(true);
@@ -29,7 +29,7 @@ test("it has default patterns value", () => {
 
 test("it has default source value", () => {
   const staticFileProcessor = new StaticFileProcessor({
-    destination: "/dest"
+    output: "/dest"
   });
 
   expect(staticFileProcessor.source).toBe(process.cwd());
@@ -39,7 +39,7 @@ test("it can copy all static files", async () => {
   const staticFileProcessor = new StaticFileProcessor({
     patterns: "**/*.html",
     source: "/src",
-    destination: "/dest"
+    output: "/dest"
   });
 
   globCopy.mockReturnValue(["foo"]);
@@ -50,10 +50,10 @@ test("it can copy all static files", async () => {
   expect(files).toEqual(["foo"]);
 });
 
-test("it can copy relative source file to destination", async () => {
+test("it can copy relative source file to output directory", async () => {
   const staticFileProcessor = new StaticFileProcessor({
     source: "/src",
-    destination: "/dest"
+    output: "/dest"
   });
 
   copy.mockReturnValue("foo");
@@ -63,10 +63,10 @@ test("it can copy relative source file to destination", async () => {
   expect(copy).toHaveBeenCalledWith("/src/foo", "/dest/foo");
 });
 
-test("it can copy absolute source file to destination", async () => {
+test("it can copy absolute source file to output directory", async () => {
   const staticFileProcessor = new StaticFileProcessor({
     source: "/src",
-    destination: "/dest"
+    output: "/dest"
   });
 
   copy.mockReturnValue("foo");
