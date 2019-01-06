@@ -1,8 +1,8 @@
 /* global expect:false, test:false */
-const getDestinationPathForSource = require("../../src/util/get-destination-path-for-source");
+const generateDestinationPath = require("../../src/util/generate-destination-path");
 
-test("it can get destination path for relative source path", () => {
-  const destPath = getDestinationPathForSource("foo/bar/../baz.txt", {
+test("it can generate destination path for relative source path", () => {
+  const destPath = generateDestinationPath("foo/bar/../baz.txt", {
     source: "/src",
     destination: "/dest"
   });
@@ -10,8 +10,8 @@ test("it can get destination path for relative source path", () => {
   expect(destPath).toBe("/dest/foo/baz.txt");
 });
 
-test("it can get destination path for absolute source path", () => {
-  const destPath = getDestinationPathForSource("/src/foo/bar/baz.txt", {
+test("it can generate destination path for absolute source path", () => {
+  const destPath = generateDestinationPath("/src/foo/bar/baz.txt", {
     source: "/src",
     destination: "/dest"
   });
@@ -20,7 +20,7 @@ test("it can get destination path for absolute source path", () => {
 });
 
 test("it can override the destination file extension", () => {
-  let destPath = getDestinationPathForSource("foo/bar.md", {
+  let destPath = generateDestinationPath("foo/bar.md", {
     source: "/src",
     destination: "/dest",
     ext: ".html"
@@ -28,7 +28,7 @@ test("it can override the destination file extension", () => {
 
   expect(destPath).toBe("/dest/foo/bar.html");
 
-  destPath = getDestinationPathForSource("/src/foo/bar.md", {
+  destPath = generateDestinationPath("/src/foo/bar.md", {
     source: "/src",
     destination: "/dest",
     ext: "html"
@@ -38,7 +38,7 @@ test("it can override the destination file extension", () => {
 });
 
 test("it can prepend hash to the destination file", () => {
-  let destPath = getDestinationPathForSource("foo/bar.txt", {
+  let destPath = generateDestinationPath("foo/bar.txt", {
     source: "/src",
     destination: "/dest",
     hash: "test"
@@ -46,7 +46,7 @@ test("it can prepend hash to the destination file", () => {
 
   expect(destPath).toBe("/dest/foo/bar.test.txt");
 
-  destPath = getDestinationPathForSource("/src/foo/bar.txt", {
+  destPath = generateDestinationPath("/src/foo/bar.txt", {
     source: "/src",
     destination: "/dest",
     hash: "test"
@@ -56,7 +56,7 @@ test("it can prepend hash to the destination file", () => {
 });
 
 test("it can receive both ext and hash arguments", () => {
-  let destPath = getDestinationPathForSource("foo/bar.md", {
+  let destPath = generateDestinationPath("foo/bar.md", {
     source: "/src",
     destination: "/dest",
     ext: ".html",
@@ -65,7 +65,7 @@ test("it can receive both ext and hash arguments", () => {
 
   expect(destPath).toBe("/dest/foo/bar.test.html");
 
-  destPath = getDestinationPathForSource("/src/foo/bar.md", {
+  destPath = generateDestinationPath("/src/foo/bar.md", {
     source: "/src",
     destination: "/dest",
     ext: ".html",

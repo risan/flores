@@ -3,7 +3,7 @@ const path = require("path");
 const STARTS_WITH_DOT = /^\./;
 
 /**
- * Get destination path for the given source path.
+ * Generate a destination path for the given source path.
  * @param  {String} sourcePath          - The source path.
  * @param  {String} options.source      - The source root directory.
  * @param  {String} options.destination - The destination root directory.
@@ -11,7 +11,7 @@ const STARTS_WITH_DOT = /^\./;
  * @param  {String} options.hash        - The file has to prepend.
  * @return {String}
  */
-const getDestinationPathForSource = (
+const generateDestinationPath = (
   sourcePath,
   { source = process.cwd(), destination, ext = undefined, hash = undefined }
 ) => {
@@ -38,4 +38,4 @@ const getDestinationPathForSource = (
   return path.format(destPathObj);
 };
 
-module.exports = getDestinationPathForSource;
+module.exports = generateDestinationPath;
