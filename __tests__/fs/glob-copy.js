@@ -6,12 +6,12 @@ const globCopy = require("../../src/fs/glob-copy");
 
 jest.mock("../../src/fs/copy");
 
-const SOURCE_DIR = path.resolve(__dirname, "../fixtures/src");
-const DESTINATION_DIR = path.resolve(__dirname, "../fixtures/glob-copy-test");
+const SOURCE_ROOT = path.resolve(__dirname, "../fixtures/src");
+const DESTINATION_ROOT = path.resolve(__dirname, "../fixtures/glob-copy-test");
 
 test("it can glob copy", async () => {
-  const files = await globCopy(["images/**", "robot.txt"], DESTINATION_DIR, {
-    cwd: SOURCE_DIR
+  const files = await globCopy(["images/**", "robot.txt"], DESTINATION_ROOT, {
+    cwd: SOURCE_ROOT
   });
 
   expect(files).toHaveLength(2);
@@ -23,12 +23,12 @@ test("it can glob copy", async () => {
   expect(copy).toHaveBeenCalledTimes(2);
 
   expect(copy).toHaveBeenCalledWith(
-    path.resolve(SOURCE_DIR, "robot.txt"),
-    path.resolve(DESTINATION_DIR, "robot.txt")
+    path.resolve(SOURCE_ROOT, "robot.txt"),
+    path.resolve(DESTINATION_ROOT, "robot.txt")
   );
 
   expect(copy).toHaveBeenCalledWith(
-    path.resolve(SOURCE_DIR, "images/example.jpg"),
-    path.resolve(DESTINATION_DIR, "images/example.jpg")
+    path.resolve(SOURCE_ROOT, "images/example.jpg"),
+    path.resolve(DESTINATION_ROOT, "images/example.jpg")
   );
 });

@@ -7,7 +7,7 @@ const copy = require("./copy");
 /**
  * Glob copy.
  * @param  {String|Array} patterns  - File patterns to copy.
- * @param  {String} destination     - The destination directory path.
+ * @param  {String} destination     - The destination root directory path.
  * @param  {String} options.cwd     - The directory to search.
  * @return {Array}
  */
