@@ -5,17 +5,16 @@ test("it can get default options", () => {
   expect(Config.defaultOptions).toMatchObject({
     watch: false,
     url: "http://localhost:4000",
-    sourceDir: "src",
-    outputDir: "public",
+    cwd: process.cwd(),
+    source: "src",
+    output: "public",
     templatesDir: "templates",
-    assetsDir: "assets",
     defaultDateFormat: "YYYY-MM-DD HH:mm:ss",
     defaultTemplate: "post.njk",
     defaultCollectionTemplate: "collection.njk"
   });
 
   expect(Config.defaultOptions).toHaveProperty("env");
-  expect(Config.defaultOptions).toHaveProperty("basePath");
   expect(Config.defaultOptions).toHaveProperty("copyFiles");
   expect(Config.defaultOptions).toHaveProperty("markdownAnchor");
   expect(Config.defaultOptions).toHaveProperty("markdownToc");
@@ -26,29 +25,52 @@ test("it can merge user options with default options", () => {
   const config = new Config({
     env: "foo",
     url: "http://localhost:3000",
-    sourceDir: "source"
+    source: "bar"
   });
 
   expect(config.options).toMatchObject({
     env: "foo",
     url: "http://localhost:3000",
-    sourceDir: "source",
-    outputDir: "public",
+    source: "bar",
+    output: "public",
     templatesDir: "templates"
   });
 });
 
-test("it has absolute paths data", () => {
-  const config = new Config();
+test("it resolves relative source, output, and templates to absolute paths", () => {
+  let config = new Config({
+    cwd: "/foo"
+  });
 
-  expect(config).toHaveProperty("basePath");
-  expect(config).toHaveProperty("sourcePath");
-  expect(config).toHaveProperty("outputPath");
-  expect(config).toHaveProperty("templatesPath");
-  expect(config).toHaveProperty("assetsPath");
+  expect(config.source).toBe("/foo/src");
+  expect(config.output).toBe("/foo/public");
+  expect(config.templatesPath).toBe("/foo/src/templates");
+
+  config = new Config({
+    cwd: "/foo",
+    source: "my-source",
+    output: "my-output",
+    templatesDir: "my-templates"
+  });
+
+  expect(config.source).toBe("/foo/my-source");
+  expect(config.output).toBe("/foo/my-output");
+  expect(config.templatesPath).toBe("/foo/my-source/my-templates");
 });
 
-test("it has url data", () => {
+test("it keeps absolute source and output paths", () => {
+  const config = new Config({
+    cwd: "/foo",
+    source: "/bar/source",
+    output: "/baz/output"
+  });
+
+  expect(config.source).toBe("/bar/source");
+  expect(config.output).toBe("/baz/output");
+  expect(config.templatesPath).toBe("/bar/source/templates");
+});
+
+test("it has url origin and pathname properties", () => {
   const config = new Config({
     env: "production",
     url: "https://example.com/foo"
@@ -128,7 +150,7 @@ test("it can generate relative url", () => {
   expect(config.getRelativeUrl("/bar/")).toBe("/foo/bar/");
 });
 
-test("it can check if it's a production", () => {
+test("it can check if it's on a production environment", () => {
   let config = new Config({ env: "production" });
   expect(config.isProduction()).toBe(true);
 

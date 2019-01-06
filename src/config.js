@@ -1,4 +1,4 @@
-const path = require("path");
+const p = require("path");
 const { URL } = require("url");
 
 const PRODUCTION = "production";
@@ -30,11 +30,10 @@ class Config {
    * @return {Void}
    */
   parseOptions(options) {
-    this.basePath = path.resolve(options.basePath);
-    this.sourcePath = path.resolve(this.basePath, options.sourceDir);
-    this.outputPath = path.resolve(this.basePath, options.outputDir);
-    this.templatesPath = path.resolve(this.sourcePath, options.templatesDir);
-    this.assetsPath = path.resolve(this.sourcePath, options.assetsDir);
+    this.cwd = p.resolve(options.cwd);
+    this.source = p.resolve(this.cwd, options.source);
+    this.output = p.resolve(this.cwd, options.output);
+    this.templatesPath = p.resolve(this.source, options.templatesDir);
 
     this.url = PROTOCOL.test(options.url)
       ? options.url
@@ -59,11 +58,11 @@ class Config {
 
   /**
    * Get url for the given path.
-   * @param  {String} p - The url path to generate.
+   * @param  {String} path - The url path to generate.
    * @return {String}
    */
-  getUrl(p = "/") {
-    const relativeUrl = this.getRelativeUrl(p);
+  getUrl(path = "/") {
+    const relativeUrl = this.getRelativeUrl(path);
 
     const cleanRelativeUrl = relativeUrl.replace(LEADING_SLASH, "");
 
@@ -74,13 +73,13 @@ class Config {
 
   /**
    * Get relative url for the given path.
-   * @param  {String} p - The url path to generate.
+   * @param  {String} path - The url path to generate.
    * @return {String}
    */
-  getRelativeUrl(p = "/") {
+  getRelativeUrl(path = "/") {
     const pathPrefix = this.pathname ? `${this.pathname}/` : "/";
 
-    const cleanPath = p.replace(LEADING_SLASH, "");
+    const cleanPath = path.replace(LEADING_SLASH, "");
 
     return cleanPath ? pathPrefix + cleanPath : pathPrefix;
   }
@@ -102,11 +101,10 @@ class Config {
       env: process.env.NODE_ENV ? process.env.NODE_ENV : PRODUCTION,
       watch: false,
       url: "http://localhost:4000",
-      basePath: process.cwd(),
-      sourceDir: "src",
-      outputDir: "public",
+      cwd: process.cwd(),
+      source: "src",
+      output: "public",
       templatesDir: "templates",
-      assetsDir: "assets",
       defaultDateFormat: "YYYY-MM-DD HH:mm:ss",
       defaultTemplate: "post.njk",
       defaultCollectionTemplate: "collection.njk",
