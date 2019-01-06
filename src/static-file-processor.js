@@ -1,6 +1,7 @@
 const path = require("path");
 
 const copy = require("./fs/copy");
+const generateDestinationPath = require("./util/generate-destination-path");
 const globCopy = require("./fs/glob-copy");
 
 const DEFAULT_PATTERNS = ["**/*.(gif|html|jpg|jpeg|png)"];
@@ -38,23 +39,13 @@ class StaticFileProcessor {
    * @return {Promise}
    */
   async copy(sourcePath) {
-    return copy(
-      path.resolve(this.source, sourcePath),
-      this.getDestinationPathForSource(sourcePath)
-    );
-  }
+    const source = path.resolve(this.source, sourcePath);
+    const destination = generateDestinationPath(sourcePath, {
+      source: this.source,
+      destination: this.destination
+    });
 
-  /**
-   * Get destination path for the given source.
-   * @param  {String} sourcePath - The source path to.
-   * @return {String}
-   */
-  getDestinationPathForSource(sourcePath = "/") {
-    const relativePath = path.isAbsolute(sourcePath)
-      ? path.relative(this.source, sourcePath)
-      : sourcePath;
-
-    return path.resolve(this.destination, relativePath);
+    return copy(source, destination);
   }
 }
 

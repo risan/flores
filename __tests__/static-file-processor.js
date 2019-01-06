@@ -75,22 +75,3 @@ test("it can copy absolute source file to destination", async () => {
 
   expect(copy).toHaveBeenCalledWith("/src/foo", "/dest/foo");
 });
-
-test("it can get destination path for source file", async () => {
-  const staticFileProcessor = new StaticFileProcessor({
-    source: "/src",
-    destination: "/dest"
-  });
-
-  expect(staticFileProcessor.getDestinationPathForSource("./foo")).toBe(
-    "/dest/foo"
-  );
-
-  expect(
-    staticFileProcessor.getDestinationPathForSource("./foo/bar/../baz.txt")
-  ).toBe("/dest/foo/baz.txt");
-
-  expect(
-    staticFileProcessor.getDestinationPathForSource("/src/foo/bar.txt")
-  ).toBe("/dest/foo/bar.txt");
-});
