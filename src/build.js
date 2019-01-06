@@ -2,12 +2,12 @@
 const fs = require("fs-extra");
 
 const Config = require("./config");
-const copyStaticFiles = require("./copy-static-files");
 const generateSitemap = require("./generate-sitemap");
 const MarkdownParser = require("./markdown-parser");
 const processCssFiles = require("./process-css-files");
 const processMarkdownFiles = require("./process-markdown-files");
 const Renderer = require("./renderer");
+const StaticFileProcessor = require("./static-file-processor");
 
 /**
  * Build the site.
@@ -26,6 +26,12 @@ const build = async (options = {}) => {
 
   const renderer = new Renderer(config);
 
+  const staticFileProcessor = new StaticFileProcessor({
+    patterns: config.copyFiles,
+    source: config.sourcePath,
+    destination: config.outputPath
+  });
+
   await fs.remove(config.outputPath);
 
   const assets = await processCssFiles(config);
@@ -43,7 +49,7 @@ const build = async (options = {}) => {
   console.log(`✅ ${posts.length} markdown posts are converted.`);
   console.log(`✅ ${collectionPages.length} collection pages are generated.`);
 
-  const files = await copyStaticFiles(config);
+  const files = await staticFileProcessor.copyAll();
 
   console.log(`✅ ${files.length} static files are copied.`);
 
