@@ -34,7 +34,6 @@ class CssProcessor {
   }
 
   async process(file) {
-    console.log(file);
     const sourcePath = path.resolve(this.source, file);
 
     const source = await readFile(sourcePath);
