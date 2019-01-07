@@ -20,12 +20,12 @@ const highlight = (str, lang) => {
 
 /**
  * Setup markdown-it instance.
- * @param  {Object} options.options - Markdown it options.
- * @param  {Object} anchor          - markdown-it-anchor plugin options.
- * @param  {Object} toc             - markdown-it-table-of-contents plugin options.
- * @return {MarkdownId}
+ * @param  {Object}    options.anchor - markdown-it-anchor plugin options.
+ * @param  {Object}    toc            - markdown-it-table-of-contents plugin options.
+ * @param  {Object} options           - markdown-it options.
+ * @return {MarkdownIt}
  */
-const setupMarkdownIt = (options = {}, { anchor = {}, toc = {} } = {}) => {
+const setupMarkdownIt = ({ anchor = {}, toc = {}, ...options } = {}) => {
   const md = markdownIt({
     highlight,
     ...options
