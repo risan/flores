@@ -6,7 +6,7 @@ const presetEnv = require("postcss-preset-env");
 /**
  * Setup postcss processor.
  * @param  {Array}   options.importPaths      - Array of paths to look for when importing files.
- * @param  {Object}  options.presetEnvOptions - prest-env plugin options.
+ * @param  {Object}  options.presetEnvOptions - preset-env plugin options.
  * @param  {Boolean} options.minify           - Set to true to use the minifier.
  * @return {postcss}
  */
