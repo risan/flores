@@ -15,9 +15,7 @@ const generateOutputPath = (
   path,
   { sourceRoot = process.cwd(), outputRoot, ext = undefined, hash = undefined }
 ) => {
-  const relativePath = p.isAbsolute(path)
-    ? p.relative(sourceRoot, path)
-    : path;
+  const relativePath = p.isAbsolute(path) ? p.relative(sourceRoot, path) : path;
 
   const outputPath = p.resolve(outputRoot, relativePath);
 

@@ -13,11 +13,7 @@ class StaticFileProcessor {
    * @param  {String} options.source          - The source directory to search.
    * @param  {String} options.output          - The output directory.
    */
-  constructor({
-    patterns = DEFAULT_PATTERNS,
-    source = process.cwd(),
-    output
-  }) {
+  constructor({ patterns = DEFAULT_PATTERNS, source = process.cwd(), output }) {
     this.patterns = patterns;
     this.source = source;
     this.output = output;
