@@ -1,4 +1,5 @@
 /* eslint no-console: "off" */
+const CssProcessor = require("./css/css-processor");
 const Config = require("./config");
 const remove = require("./fs/remove");
 const StaticFileProcessor = require("./static-file-processor");
@@ -10,6 +11,16 @@ class Processor {
    */
   constructor(options = {}) {
     this.config = new Config(options);
+
+    this.css = new CssProcessor({
+      source: this.config.source,
+      output: this.config.output,
+      baseUrl: this.config.pathname,
+      presetEnvOptions: this.config.postcssPresetEnv,
+      minify: this.config.isProduction(),
+      sourceMap: !this.config.isProduction(),
+      hash: this.config.isProduction()
+    });
 
     this.staticFile = new StaticFileProcessor({
       patterns: this.config.copyFiles,
@@ -27,6 +38,8 @@ class Processor {
 
     await this.cleanOutputDir();
 
+    await this.processCss();
+
     await this.copyStaticFiles();
   }
 
@@ -38,6 +51,18 @@ class Processor {
     await remove(this.config.output);
 
     this.log("✅ Output directory is cleaned.");
+  }
+
+  /**
+   * Process css files.
+   * @return {Object}
+   */
+  async processCss() {
+    const assets = await this.css.processAll();
+
+    this.log(`✅ ${Object.keys(assets).length} CSS files are compiled.`);
+
+    return assets;
   }
 
   /**

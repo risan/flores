@@ -1,5 +1,6 @@
 /* global expect:false, jest:false, test:false */
 /* eslint no-console: "off" */
+const CssProcessor = require("../src/css/css-processor");
 const Config = require("../src/config");
 const Processor = require("../src/processor");
 const remove = require("../src/fs/remove");
@@ -13,16 +14,33 @@ test("it has config property", () => {
   expect(processor.config).toBeInstanceOf(Config);
 });
 
-test("it has staticFile property", () => {
+test("it has staticFile and css property", () => {
   const processor = new Processor();
 
   expect(processor.staticFile).toBeInstanceOf(StaticFileProcessor);
+  expect(processor.css).toBeInstanceOf(CssProcessor);
 });
 
 test("it can receive config options parameter", () => {
   const processor = new Processor({ url: "http://foo.bar" });
 
   expect(processor.config.url).toBe("http://foo.bar");
+});
+
+test("it can generate the website", async () => {
+  const processor = new Processor({
+    output: "/dest"
+  });
+
+  processor.cleanOutputDir = jest.fn();
+  processor.processCss = jest.fn();
+  processor.copyStaticFiles = jest.fn();
+
+  await processor.process();
+
+  expect(processor.cleanOutputDir).toHaveBeenCalled();
+  expect(processor.processCss).toHaveBeenCalled();
+  expect(processor.copyStaticFiles).toHaveBeenCalled();
 });
 
 test("it can remove output directory", async () => {
@@ -33,6 +51,19 @@ test("it can remove output directory", async () => {
   await processor.cleanOutputDir();
 
   expect(remove).toHaveBeenCalledWith("/foo");
+});
+
+test("it can process css files", async () => {
+  const processor = new Processor();
+
+  processor.css.processAll = jest
+    .fn()
+    .mockReturnValue({ "main.css": "main.123.css" });
+
+  const assets = await processor.processCss();
+
+  expect(processor.css.processAll).toHaveBeenCalled();
+  expect(assets).toEqual({ "main.css": "main.123.css" });
 });
 
 test("it can copy static files", async () => {
