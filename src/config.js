@@ -102,6 +102,7 @@ class Config {
       watch: false,
       url: "http://localhost:4000",
       cwd: process.cwd(),
+      verbose: true,
       source: "src",
       output: "public",
       templatesDir: "templates",
