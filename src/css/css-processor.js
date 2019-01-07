@@ -49,7 +49,7 @@ class CssProcessor {
    * @return {Object}
    */
   async processAll() {
-    const files = await this.getAllCssFiles();
+    const files = await this.getFiles();
 
     const results = await Promise.all(files.map(file => this.process(file)));
 
@@ -94,7 +94,7 @@ class CssProcessor {
    * Get all css files.
    * @return {Array}
    */
-  async getAllCssFiles() {
+  async getFiles() {
     return globby("**/[^_]*.css", {
       cwd: this.source
     });

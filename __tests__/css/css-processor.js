@@ -58,7 +58,7 @@ test("it can process all css files", async () => {
     output: "/dest"
   });
 
-  cssProcessor.getAllCssFiles = jest
+  cssProcessor.getFiles = jest
     .fn()
     .mockReturnValue(["css/main.css", "style.css"]);
 
@@ -70,7 +70,7 @@ test("it can process all css files", async () => {
 
   const results = await cssProcessor.processAll();
 
-  expect(cssProcessor.getAllCssFiles).toHaveBeenCalled();
+  expect(cssProcessor.getFiles).toHaveBeenCalled();
   expect(cssProcessor.process).toHaveBeenNthCalledWith(1, "css/main.css");
   expect(cssProcessor.process).toHaveBeenNthCalledWith(2, "style.css");
 
@@ -109,7 +109,7 @@ test("it can get all css files", async () => {
     output: "/dest"
   });
 
-  const files = await cssProcessor.getAllCssFiles();
+  const files = await cssProcessor.getFiles();
 
   expect(files).toEqual(["assets/main.css"]);
 });
