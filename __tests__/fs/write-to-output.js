@@ -53,3 +53,13 @@ test("it can prepend a hash to the output filename", async () => {
     "foo bar"
   );
 });
+
+test("it returns output path", async () => {
+  const outputPath = await writeToOutput("foo bar", {
+    source: "foo/bar.txt",
+    sourceRoot: "/src",
+    outputRoot: "/dest"
+  });
+
+  expect(outputPath).toBe("/dest/foo/bar.txt");
+});

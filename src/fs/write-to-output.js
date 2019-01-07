@@ -7,7 +7,7 @@ const md5 = require("../util/md5");
  * Write data to file.
  * @param  {String} path - The file path.
  * @param  {String} data - The data to write.
- * @return {Promise}
+ * @return {String}
  */
 const writeToOutput = async (
   data,
@@ -20,7 +20,9 @@ const writeToOutput = async (
     ...options
   });
 
-  return writeFile(path, data);
+  await writeFile(path, data);
+
+  return path;
 };
 
 module.exports = writeToOutput;
