@@ -1,74 +1,64 @@
-const fs = require("fs-extra");
-const formatDate = require("date-fns/format");
-const minifier = require("html-minifier");
 const nunjucks = require("nunjucks");
+
+const minifyHtml = require("./util/minify-html");
+
+const BODY_CLOSING_TAG = /(<\/body[\s]*>)/;
 
 class Renderer {
   /**
-   * Create new Renderer.
-   * @param  {Config} config - The Config instance.
-   * @return {Proxy}
+   * Create new Renderer instance.
+   * @param  {String}  options.templatesPath - Templates path.
+   * @param  {Boolean} options.minify        - Set to true to minify the result.
+   * @param  {Array}   options.appendScripts - JavaScript URLs to append.
    */
-  constructor(config) {
-    this.config = config;
-    this.env = nunjucks.configure(config.templatesPath);
+  constructor({
+    templatesPath = process.cwd(),
+    minify = false,
+    appendScripts = []
+  } = {}) {
+    this.env = nunjucks.configure(templatesPath);
 
-    this.env.addGlobal("config", this.config);
-    this.env.addFilter("absoluteUrl", path => this.config.getUrl(path));
-    this.env.addFilter("relativeUrl", path => this.config.getRelativeUrl(path));
-    this.env.addFilter(
-      "formatDate",
-      (date, format = config.defaultDateFormat) => formatDate(date, format)
-    );
+    this.minify = minify;
 
-    return new Proxy(this, {
-      get(renderer, prop) {
-        return prop in renderer ? renderer[prop] : renderer.env[prop];
-      }
-    });
+    this.appendScriptsStr = appendScripts
+      .map(script => `<script src="${script}"></script>`.trim())
+      .join("");
   }
 
   /**
-   * Render the given template.
-   * @param  {String} template - The template path to render.
-   * @param  {Object} data     - The view data to render.
+   * Add global template data.
+   * @param {String} name  - Name of the variable.
+   * @param {Mixed}  value - The data value.
+   */
+  addGlobal(name, value) {
+    this.env.addGlobal(name, value);
+  }
+
+  /**
+   * Add custom filter.
+   * @param {String}   name - The filter name.
+   * @param {Function} fn   - The filter function to add.
+   */
+  addFilter(name, fn) {
+    this.env.addFilter(name, fn);
+  }
+
+  /**
+   * Render the given template name.
+   * @param  {String} template - Template name to render.
+   * @param  {Object} data     - Data to render.
    * @return {String}
    */
   render(template, data = {}) {
     let str = this.env.render(template, data);
 
-    if (this.config.isProduction()) {
-      str = minifier.minify(str, {
-        collapseWhitespace: true,
-        removeComments: true
-      });
+    if (this.minify) {
+      str = minifyHtml(str);
     }
 
-    if (this.config.watch) {
-      str = str.replace(
-        /(<\/body[\s]*>)/i,
-        `
-        <script src="/socket.io/socket.io.js"></script>
-        <script src="/flores/socket-client.js"></script>
-        $1
-      `
-      );
+    if (this.appendScriptsStr) {
+      str = str.replace(BODY_CLOSING_TAG, `${this.appendScriptsStr}$1`);
     }
-
-    return str;
-  }
-
-  /**
-   * Render the template and write it to a file.
-   * @param  {String} outputPath  - The path to save the file.
-   * @param  {String} template    - The template to render.
-   * @param  {Object} data        - The view data to render.
-   * @return {String}
-   */
-  async writeHtml(outputPath, template, data = {}) {
-    const str = this.render(template, data);
-
-    await fs.outputFile(outputPath, str);
 
     return str;
   }
