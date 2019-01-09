@@ -11,12 +11,12 @@ test("it can get default options", () => {
     output: "public",
     templatesDir: "templates",
     defaultDateFormat: "YYYY-MM-DD HH:mm:ss",
-    defaultTemplate: "post.njk",
-    defaultCollectionTemplate: "collection.njk"
+    defaultTemplate: "post.njk"
   });
 
   expect(Config.defaultOptions).toHaveProperty("env");
   expect(Config.defaultOptions).toHaveProperty("copyFiles");
+  expect(Config.defaultOptions).toHaveProperty("markdown");
   expect(Config.defaultOptions).toHaveProperty("markdownAnchor");
   expect(Config.defaultOptions).toHaveProperty("markdownToc");
   expect(Config.defaultOptions).toHaveProperty("postcssPresetEnv.stage");

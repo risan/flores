@@ -108,8 +108,8 @@ class Config {
       templatesDir: "templates",
       defaultDateFormat: "YYYY-MM-DD HH:mm:ss",
       defaultTemplate: "post.njk",
-      defaultCollectionTemplate: "collection.njk",
       copyFiles: ["images/**", "robot.txt", "**/*.html"],
+      markdown: {},
       markdownAnchor: {
         permalink: true
       },
