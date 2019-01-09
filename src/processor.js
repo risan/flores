@@ -1,7 +1,11 @@
 /* eslint no-console: "off" */
+const formatDate = require("date-fns/format");
+
 const CssProcessor = require("./css/css-processor");
 const Config = require("./config");
+const MarkdownProcessor = require("./markdown/markdown-processor");
 const remove = require("./fs/remove");
+const Renderer = require("./renderer");
 const StaticFileProcessor = require("./static-file-processor");
 
 class Processor {
@@ -12,6 +16,21 @@ class Processor {
   constructor(options = {}) {
     this.config = new Config(options);
 
+    this.renderer = new Renderer({
+      templatesPath: this.config.templatesPath,
+      minify: this.config.isProduction(),
+      appendScripts: this.config.watch
+        ? ["/socket.io/socket.io.js", "/flores/socket-client.js"]
+        : []
+    });
+
+    this.renderer.addGlobal("config", this.config);
+
+    this.renderer.addFilter(
+      "formatDate",
+      (date, format = this.config.defaultDateFormat) => formatDate(date, format)
+    );
+
     this.css = new CssProcessor({
       source: this.config.source,
       output: this.config.output,
@@ -20,6 +39,19 @@ class Processor {
       minify: this.config.isProduction(),
       sourceMap: !this.config.isProduction(),
       hash: this.config.isProduction()
+    });
+
+    this.markdown = new MarkdownProcessor({
+      source: this.config.source,
+      output: this.config.output,
+      baseUrl: this.config.pathname,
+      defaultTemplate: this.config.defaultTemplate,
+      renderer: this.renderer,
+      parserOptions: {
+        ...this.config.markdown,
+        anchor: this.config.markdownAnchor,
+        toc: this.config.markdownToc
+      }
     });
 
     this.staticFile = new StaticFileProcessor({
@@ -39,6 +71,8 @@ class Processor {
     await this.cleanOutputDir();
 
     await this.processCss();
+
+    await this.processMarkdown();
 
     await this.copyStaticFiles();
   }
@@ -60,9 +94,24 @@ class Processor {
   async processCss() {
     const assets = await this.css.processAll();
 
+    this.renderer.addGlobal("css", assets);
+
     this.log(`✅ ${Object.keys(assets).length} CSS files are compiled.`);
 
     return assets;
+  }
+
+  /**
+   * Process markdown files.
+   * @return {Object}
+   */
+  async processMarkdown() {
+    const data = await this.markdown.processAll();
+
+    this.log(`✅ ${data.posts.length} posts are processed.`);
+    this.log(`✅ ${data.pages.length} pages are processed.`);
+
+    return data;
   }
 
   /**
