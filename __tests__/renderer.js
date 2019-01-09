@@ -13,12 +13,12 @@ test("it has env and minify property", () => {
   expect(renderer.minify).toBe(true);
 });
 
-test("it can add global data", () => {
+test("it can add and get global data", () => {
   const renderer = new Renderer();
 
   renderer.addGlobal("foo", "bar");
 
-  expect(renderer.env.getGlobal("foo")).toBe("bar");
+  expect(renderer.getGlobal("foo")).toBe("bar");
 });
 
 test("it can add filter", () => {

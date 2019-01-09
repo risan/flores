@@ -35,6 +35,15 @@ class Renderer {
   }
 
   /**
+   * Get the global template data.
+   * @param {String} name  - Name of the global template variable to retrieve.
+   * @return {Mixed}
+   */
+  getGlobal(name) {
+    return this.env.getGlobal(name);
+  }
+
+  /**
    * Add custom filter.
    * @param {String}   name - The filter name.
    * @param {Function} fn   - The filter function to add.
