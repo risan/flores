@@ -39,6 +39,86 @@ test("it has parser property", () => {
   expect(MarkdownParser).toHaveBeenCalledWith({ html: true });
 });
 
+test("it can process all markdown files", async () => {
+  const addGlobal = jest.fn();
+
+  const markdownProcessor = new MarkdownProcessor({
+    renderer: {
+      addGlobal
+    }
+  });
+
+  markdownProcessor.collectData = jest.fn().mockReturnValue({
+    pages: ["page1", "page2"],
+    posts: ["post1", "post2"],
+    collections: { foo: ["bar"] }
+  });
+
+  markdownProcessor.writeHtml = jest.fn();
+
+  const data = await markdownProcessor.processAll();
+
+  expect(markdownProcessor.collectData).toHaveBeenCalled();
+  expect(addGlobal).toHaveBeenCalledWith("pages", ["page1", "page2"]);
+  expect(addGlobal).toHaveBeenCalledWith("posts", ["post1", "post2"]);
+  expect(addGlobal).toHaveBeenCalledWith("collections", { foo: ["bar"] });
+
+  expect(markdownProcessor.writeHtml).toHaveBeenCalledTimes(4);
+  expect(markdownProcessor.writeHtml).toHaveBeenCalledWith("page1");
+  expect(markdownProcessor.writeHtml).toHaveBeenCalledWith("page2");
+  expect(markdownProcessor.writeHtml).toHaveBeenCalledWith("post1");
+  expect(markdownProcessor.writeHtml).toHaveBeenCalledWith("post1");
+
+  expect(data).toEqual({
+    pages: ["page1", "page2"],
+    posts: ["post1", "post2"],
+    collections: { foo: ["bar"] }
+  });
+});
+
+test("it can collect markdown data", async () => {
+  const markdownProcessor = new MarkdownProcessor({});
+
+  const test1 = {
+    frontMatter: { date: new Date("2018-01-01"), title: "foo" },
+    collectionName: "test"
+  };
+
+  const test2 = {
+    frontMatter: { date: new Date("2018-01-02"), title: "bar" },
+    collectionName: "test"
+  };
+
+  const testPage = {
+    frontMatter: { page: true, title: "test" },
+    collectionName: "test"
+  };
+
+  const awesome1 = {
+    frontMatter: { date: new Date("2018-01-03"), title: "baz" },
+    collectionName: "awesome"
+  };
+
+  markdownProcessor.parseAllFiles = jest
+    .fn()
+    .mockReturnValue([test1, test2, testPage, awesome1]);
+
+  const data = await markdownProcessor.collectData();
+
+  expect(data).toHaveProperty("pages");
+  expect(data).toHaveProperty("posts");
+  expect(data).toHaveProperty("collections");
+
+  expect(data.pages).toEqual([testPage]);
+
+  expect(data.posts).toEqual([awesome1, test2, test1]);
+
+  expect(data.collections).toEqual({
+    awesome: [awesome1],
+    test: [test2, test1]
+  });
+});
+
 test("it can write html", async () => {
   const render = jest.fn().mockReturnValue("foo bar");
   const getGlobal = jest.fn().mockReturnValue({ posts: ["test"] });
