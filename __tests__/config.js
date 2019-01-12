@@ -1,5 +1,6 @@
 /* global expect:false, test:false */
 const Config = require("../src/config");
+const UrlGenerator = require("../src/url-generator");
 
 test("it can get default options", () => {
   expect(Config.defaultOptions).toMatchObject({
@@ -96,6 +97,16 @@ test("it uses http protocol if non is set", () => {
   });
 
   expect(config.url.toString()).toBe("http://example.com/");
+});
+
+test("it has urlGenerator property", () => {
+  const config = new Config({
+    env: "production",
+    url: "http://example.com/"
+  });
+
+  expect(config.urlGenerator).toBeInstanceOf(UrlGenerator);
+  expect(config.urlGenerator.toString()).toBe("http://example.com/");
 });
 
 test("it can check if it's on a production environment", () => {
