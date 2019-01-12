@@ -1,8 +1,6 @@
 const p = require("path");
 const { URL } = require("url");
 
-const UrlGenerator = require("./url-generator");
-
 const PRODUCTION = "production";
 
 const PROTOCOL = /^http[s]?:\/\//i;
@@ -50,8 +48,6 @@ class Config {
         this.url.port = 4000;
       }
     }
-
-    this.urlGenerator = new UrlGenerator(this.url);
   }
 
   /**
