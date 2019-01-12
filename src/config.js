@@ -4,8 +4,6 @@ const { URL } = require("url");
 const PRODUCTION = "production";
 
 const PROTOCOL = /^http[s]?:\/\//i;
-const LEADING_SLASH = /^\//;
-const TRAILING_SLASH = /\/$/;
 
 class Config {
   /**
@@ -53,30 +51,6 @@ class Config {
   }
 
   /**
-   * Get url for the given path.
-   * @param  {String} path - The url path to generate.
-   * @return {String}
-   */
-  getUrl(path = "/") {
-    const relativeUrl = this.getRelativeUrl(path);
-
-    return this.url.origin + relativeUrl;
-  }
-
-  /**
-   * Get relative url for the given path.
-   * @param  {String} path - The url path to generate.
-   * @return {String}
-   */
-  getRelativeUrl(path = "/") {
-    const cleanPath = path.replace(LEADING_SLASH, "");
-
-    return TRAILING_SLASH.test(this.url.pathname)
-      ? this.url.pathname + cleanPath
-      : this.url.pathname + "/" + cleanPath;
-  }
-
-  /**
    * Check if it's a production environment.
    * @return {Boolean}
    */
@@ -92,7 +66,7 @@ class Config {
     return {
       env: process.env.NODE_ENV ? process.env.NODE_ENV : PRODUCTION,
       watch: false,
-      url: "http://localhost:4000",
+      url: "http://localhost:4000/",
       cwd: process.cwd(),
       verbose: true,
       source: "src",

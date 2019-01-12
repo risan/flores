@@ -4,7 +4,7 @@ const Config = require("../src/config");
 test("it can get default options", () => {
   expect(Config.defaultOptions).toMatchObject({
     watch: false,
-    url: "http://localhost:4000",
+    url: "http://localhost:4000/",
     cwd: process.cwd(),
     verbose: true,
     source: "src",
@@ -25,13 +25,13 @@ test("it can get default options", () => {
 test("it can merge user options with default options", () => {
   const config = new Config({
     env: "foo",
-    url: "http://localhost:3000",
+    url: "http://localhost:3000/",
     source: "bar"
   });
 
   expect(config.options).toMatchObject({
     env: "foo",
-    url: "http://localhost:3000",
+    url: "http://localhost:3000/",
     source: "bar",
     output: "public",
     templatesDir: "templates"
@@ -96,50 +96,6 @@ test("it uses http protocol if non is set", () => {
   });
 
   expect(config.url.toString()).toBe("http://example.com/");
-});
-
-test("it can generate absolute url", () => {
-  let config = new Config({
-    env: "production",
-    url: "https://example.com"
-  });
-
-  expect(config.getUrl("/")).toBe("https://example.com/");
-  expect(config.getUrl("foo")).toBe("https://example.com/foo");
-  expect(config.getUrl("/foo")).toBe("https://example.com/foo");
-  expect(config.getUrl("foo/")).toBe("https://example.com/foo/");
-  expect(config.getUrl("/foo/")).toBe("https://example.com/foo/");
-
-  config = new Config({
-    env: "production",
-    url: "https://example.com/foo"
-  });
-
-  expect(config.getUrl("/")).toBe("https://example.com/foo/");
-  expect(config.getUrl("/bar")).toBe("https://example.com/foo/bar");
-  expect(config.getUrl("/bar/")).toBe("https://example.com/foo/bar/");
-});
-
-test("it can generate relative url", () => {
-  let config = new Config({
-    env: "production",
-    url: "https://example.com"
-  });
-
-  expect(config.getRelativeUrl("/")).toBe("/");
-  expect(config.getRelativeUrl("foo")).toBe("/foo");
-  expect(config.getRelativeUrl("/foo")).toBe("/foo");
-  expect(config.getRelativeUrl("foo/")).toBe("/foo/");
-  expect(config.getRelativeUrl("/foo/")).toBe("/foo/");
-
-  config = new Config({
-    env: "production",
-    url: "https://example.com/foo"
-  });
-
-  expect(config.getRelativeUrl("/")).toBe("/foo/");
-  expect(config.getRelativeUrl("/bar")).toBe("/foo/bar");
-  expect(config.getRelativeUrl("/bar/")).toBe("/foo/bar/");
 });
 
 test("it can check if it's on a production environment", () => {
