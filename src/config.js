@@ -5,7 +5,7 @@ const PRODUCTION = "production";
 
 const PROTOCOL = /^http[s]?:\/\//i;
 const LEADING_SLASH = /^\//;
-const LEADING_AND_TRAILING_SLASHES = /(^\/|\/$)/g;
+const TRAILING_SLASH = /\/$/;
 
 class Config {
   /**
@@ -45,14 +45,10 @@ class Config {
 
     if (this.isProduction()) {
       this.origin = urlObj.origin;
-      const pathname = urlObj.pathname.replace(
-        LEADING_AND_TRAILING_SLASHES,
-        ""
-      );
-      this.pathname = pathname ? `/${pathname}` : "";
+      this.pathname = urlObj.pathname.replace(TRAILING_SLASH, "") + "/";
     } else {
       this.origin = `http://localhost:${this.port}`;
-      this.pathname = "";
+      this.pathname = "/";
     }
   }
 
@@ -64,11 +60,7 @@ class Config {
   getUrl(path = "/") {
     const relativeUrl = this.getRelativeUrl(path);
 
-    const cleanRelativeUrl = relativeUrl.replace(LEADING_SLASH, "");
-
-    return cleanRelativeUrl
-      ? `${this.origin}/${cleanRelativeUrl}`
-      : this.origin;
+    return relativeUrl === "/" ? this.origin : this.origin + relativeUrl;
   }
 
   /**
@@ -77,11 +69,9 @@ class Config {
    * @return {String}
    */
   getRelativeUrl(path = "/") {
-    const pathPrefix = this.pathname ? `${this.pathname}/` : "/";
-
     const cleanPath = path.replace(LEADING_SLASH, "");
 
-    return cleanPath ? pathPrefix + cleanPath : pathPrefix;
+    return this.pathname + cleanPath;
   }
 
   /**

@@ -71,24 +71,60 @@ test("it keeps absolute source and output paths", () => {
   expect(config.templatesPath).toBe("/bar/source/templates");
 });
 
-test("it has url origin and pathname properties", () => {
-  const config = new Config({
+test("it has url origin property", () => {
+  let config = new Config({
+    env: "production",
+    url: "https://example.com"
+  });
+
+  expect(config.origin).toBe("https://example.com");
+
+  config = new Config({
+    env: "production",
+    url: "https://example.com/foo/bar"
+  });
+
+  expect(config.origin).toBe("https://example.com");
+});
+
+test("it has url pathname property", () => {
+  let config = new Config({
+    env: "production",
+    url: "https://example.com"
+  });
+
+  expect(config.pathname).toBe("/");
+
+  config = new Config({
+    env: "production",
+    url: "https://example.com/"
+  });
+
+  expect(config.pathname).toBe("/");
+
+  config = new Config({
     env: "production",
     url: "https://example.com/foo"
   });
 
-  expect(config.origin).toBe("https://example.com");
-  expect(config.pathname).toBe("/foo");
+  expect(config.pathname).toBe("/foo/");
+
+  config = new Config({
+    env: "production",
+    url: "https://example.com/foo/bar/"
+  });
+
+  expect(config.pathname).toBe("/foo/bar/");
 });
 
 test("url for non-production is always localhost", () => {
   const config = new Config({
     env: "development",
-    url: "https://example.com/foo"
+    url: "https://example.com/foo/bar/"
   });
 
   expect(config.origin).toBe("http://localhost:4000");
-  expect(config.pathname).toBe("");
+  expect(config.pathname).toBe("/");
   expect(config.port).toBe(4000);
 });
 
@@ -117,6 +153,7 @@ test("it can generate absolute url", () => {
     url: "https://example.com"
   });
 
+  expect(config.getUrl("/")).toBe("https://example.com");
   expect(config.getUrl("foo")).toBe("https://example.com/foo");
   expect(config.getUrl("/foo")).toBe("https://example.com/foo");
   expect(config.getUrl("foo/")).toBe("https://example.com/foo/");
@@ -127,6 +164,7 @@ test("it can generate absolute url", () => {
     url: "https://example.com/foo"
   });
 
+  expect(config.getUrl("/")).toBe("https://example.com/foo/");
   expect(config.getUrl("/bar")).toBe("https://example.com/foo/bar");
   expect(config.getUrl("/bar/")).toBe("https://example.com/foo/bar/");
 });
@@ -137,6 +175,7 @@ test("it can generate relative url", () => {
     url: "https://example.com"
   });
 
+  expect(config.getRelativeUrl("/")).toBe("/");
   expect(config.getRelativeUrl("foo")).toBe("/foo");
   expect(config.getRelativeUrl("/foo")).toBe("/foo");
   expect(config.getRelativeUrl("foo/")).toBe("/foo/");
@@ -147,6 +186,7 @@ test("it can generate relative url", () => {
     url: "https://example.com/foo"
   });
 
+  expect(config.getRelativeUrl("/")).toBe("/foo/");
   expect(config.getRelativeUrl("/bar")).toBe("/foo/bar");
   expect(config.getRelativeUrl("/bar/")).toBe("/foo/bar/");
 });
