@@ -60,7 +60,7 @@ class Config {
   getUrl(path = "/") {
     const relativeUrl = this.getRelativeUrl(path);
 
-    return relativeUrl === "/" ? this.origin : this.origin + relativeUrl;
+    return this.origin + relativeUrl;
   }
 
   /**

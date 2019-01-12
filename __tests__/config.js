@@ -153,7 +153,7 @@ test("it can generate absolute url", () => {
     url: "https://example.com"
   });
 
-  expect(config.getUrl("/")).toBe("https://example.com");
+  expect(config.getUrl("/")).toBe("https://example.com/");
   expect(config.getUrl("foo")).toBe("https://example.com/foo");
   expect(config.getUrl("/foo")).toBe("https://example.com/foo");
   expect(config.getUrl("foo/")).toBe("https://example.com/foo/");
