@@ -21,9 +21,13 @@ test("it has config, renderer, css, markdown, and staticFile properties", () => 
 });
 
 test("it can receive config options parameter", () => {
-  const processor = new Processor({ url: "http://foo.bar" });
+  const processor = new Processor({
+    env: "production",
+    url: "http://foo.bar"
+  });
 
-  expect(processor.config.url).toBe("http://foo.bar");
+  expect(processor.config.env).toBe("production");
+  expect(processor.config.url.toString()).toBe("http://foo.bar/");
 });
 
 test("it set renderer's minify option to true on production", () => {
