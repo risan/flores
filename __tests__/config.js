@@ -71,61 +71,13 @@ test("it keeps absolute source and output paths", () => {
   expect(config.templatesPath).toBe("/bar/source/templates");
 });
 
-test("it has url origin property", () => {
-  let config = new Config({
-    env: "production",
-    url: "https://example.com"
-  });
-
-  expect(config.origin).toBe("https://example.com");
-
-  config = new Config({
-    env: "production",
-    url: "https://example.com/foo/bar"
-  });
-
-  expect(config.origin).toBe("https://example.com");
-});
-
-test("it has url pathname property", () => {
-  let config = new Config({
-    env: "production",
-    url: "https://example.com"
-  });
-
-  expect(config.pathname).toBe("/");
-
-  config = new Config({
-    env: "production",
-    url: "https://example.com/"
-  });
-
-  expect(config.pathname).toBe("/");
-
-  config = new Config({
-    env: "production",
-    url: "https://example.com/foo"
-  });
-
-  expect(config.pathname).toBe("/foo/");
-
-  config = new Config({
-    env: "production",
-    url: "https://example.com/foo/bar/"
-  });
-
-  expect(config.pathname).toBe("/foo/bar/");
-});
-
 test("url for non-production is always localhost", () => {
   const config = new Config({
     env: "development",
     url: "https://example.com/foo/bar/"
   });
 
-  expect(config.origin).toBe("http://localhost:4000");
-  expect(config.pathname).toBe("/");
-  expect(config.port).toBe(4000);
+  expect(config.url.toString()).toBe("http://localhost:4000/");
 });
 
 test("it can override default port number", () => {
@@ -134,8 +86,7 @@ test("it can override default port number", () => {
     url: "http://localhost:3000"
   });
 
-  expect(config.origin).toBe("http://localhost:3000");
-  expect(config.port).toBe(3000);
+  expect(config.url.toString()).toBe("http://localhost:3000/");
 });
 
 test("it uses http protocol if non is set", () => {
@@ -144,7 +95,7 @@ test("it uses http protocol if non is set", () => {
     url: "example.com"
   });
 
-  expect(config.origin).toBe("http://example.com");
+  expect(config.url.toString()).toBe("http://example.com/");
 });
 
 test("it can generate absolute url", () => {

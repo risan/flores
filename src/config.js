@@ -35,20 +35,20 @@ class Config {
     this.output = p.resolve(this.cwd, options.output);
     this.templatesPath = p.resolve(this.source, options.templatesDir);
 
-    this.url = PROTOCOL.test(options.url)
+    const url = PROTOCOL.test(options.url)
       ? options.url
       : `http://${options.url}`;
 
-    const urlObj = new URL(this.url);
+    this.url = new URL(url);
 
-    this.port = urlObj.port ? parseInt(urlObj.port, 10) : 4000;
+    if (!this.isProduction()) {
+      this.url.protocol = "http:";
+      this.url.hostname = "localhost";
+      this.url.pathname = "/";
 
-    if (this.isProduction()) {
-      this.origin = urlObj.origin;
-      this.pathname = urlObj.pathname.replace(TRAILING_SLASH, "") + "/";
-    } else {
-      this.origin = `http://localhost:${this.port}`;
-      this.pathname = "/";
+      if (!this.url.port) {
+        this.url.port = 4000;
+      }
     }
   }
 
@@ -60,7 +60,7 @@ class Config {
   getUrl(path = "/") {
     const relativeUrl = this.getRelativeUrl(path);
 
-    return this.origin + relativeUrl;
+    return this.url.origin + relativeUrl;
   }
 
   /**
@@ -71,7 +71,9 @@ class Config {
   getRelativeUrl(path = "/") {
     const cleanPath = path.replace(LEADING_SLASH, "");
 
-    return this.pathname + cleanPath;
+    return TRAILING_SLASH.test(this.url.pathname)
+      ? this.url.pathname + cleanPath
+      : this.url.pathname + "/" + cleanPath;
   }
 
   /**
