@@ -9,29 +9,28 @@ const MarkdownParser = require("./markdown-parser");
 const writeFile = require("../fs/write-file");
 
 const INDEX_FILENAME = /index.html$/i;
-const TRAILING_SLASH = /\/$/;
 
 class MarkdownProcessor {
   /**
    * Create MarkdownProcessor instance.
-   * @param  {String} options.source          - The markdown source directory.
-   * @param  {String} options.output          - The output directory.
-   * @param  {String} options.baseUrl         - The base URL to prepend to the post's url.
-   * @param  {String} options.defaultTemplate - The default template to use.
-   * @param  {Renderer} options.renderer      - The Renderer instance.
-   * @param  {Object} options.parserOptions   - The markdown parser options.
+   * @param  {String}       options.source          - The markdown source directory.
+   * @param  {String}       options.output          - The output directory.
+   * @param  {UrlGenerator} options.urlGenerator    - The UrlGenerator instance.
+   * @param  {String}       options.defaultTemplate - The default template to use.
+   * @param  {Renderer}     options.renderer        - The Renderer instance.
+   * @param  {Object}       options.parserOptions   - The markdown parser options.
    */
   constructor({
     source = process.cwd(),
     output,
-    baseUrl = "",
+    urlGenerator,
     defaultTemplate = "post.njk",
     renderer,
     parserOptions = {}
   }) {
     this.source = source;
     this.output = output;
-    this.baseUrl = baseUrl.replace(TRAILING_SLASH, "");
+    this.urlGenerator = urlGenerator;
     this.defaultTemplate = defaultTemplate;
     this.renderer = renderer;
     this.parser = new MarkdownParser(parserOptions);
@@ -122,28 +121,18 @@ class MarkdownProcessor {
     const outputPathRel = p.relative(this.output, outputPath);
     const { dir } = p.parse(outputPathRel);
 
+    const urlPath = INDEX_FILENAME.test(outputPathRel)
+      ? outputPathRel.replace(INDEX_FILENAME, "")
+      : outputPathRel;
+
     return {
       frontMatter,
       content: html,
       outputPath,
-      url: this.getUrlForOutputPath(outputPath),
+      url: this.urlGenerator.to(urlPath),
+      relativeUrl: this.urlGenerator.relative(urlPath),
       collectionName: dir || "root"
     };
-  }
-
-  /**
-   * Get url for the given output path.
-   * @param  {String} path - The output path.
-   * @return {String}
-   */
-  getUrlForOutputPath(path) {
-    const pathRel = p.isAbsolute(path) ? p.relative(this.output, path) : path;
-
-    const urlPath = INDEX_FILENAME.test(pathRel)
-      ? pathRel.replace(INDEX_FILENAME, "")
-      : pathRel;
-
-    return `${this.baseUrl}/${urlPath}`;
   }
 
   /**

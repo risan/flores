@@ -52,7 +52,7 @@ class Processor {
     this.markdown = new MarkdownProcessor({
       source: this.config.source,
       output: this.config.output,
-      baseUrl: this.config.pathname,
+      urlGenerator: this.config.urlGenerator,
       defaultTemplate: this.config.defaultTemplate,
       renderer: this.renderer,
       parserOptions: {

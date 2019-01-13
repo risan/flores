@@ -4,28 +4,25 @@ const p = require("path");
 const MarkdownParser = require("../../src/markdown/markdown-parser");
 const MarkdownProcessor = require("../../src/markdown/markdown-processor");
 const writeFile = require("../../src/fs/write-file");
+const UrlGenerator = require("../../src/url-generator");
 
 jest.mock("../../src/markdown/markdown-parser");
 jest.mock("../../src/fs/write-file");
 
-test("it has source, output, and defaultTemplate properties", () => {
+test("it has source, output, urlGenerator, and defaultTemplate properties", () => {
+  const urlGenerator = new UrlGenerator("http://example.com");
+
   const markdownProcessor = new MarkdownProcessor({
     source: "/src",
     output: "/dest",
+    urlGenerator,
     defaultTemplate: "test.njk"
   });
 
   expect(markdownProcessor.source).toBe("/src");
   expect(markdownProcessor.output).toBe("/dest");
+  expect(markdownProcessor.urlGenerator).toBe(urlGenerator);
   expect(markdownProcessor.defaultTemplate).toBe("test.njk");
-});
-
-test("it removes trailing slash from base url", () => {
-  const markdownProcessor = new MarkdownProcessor({
-    baseUrl: "/foo/bar/"
-  });
-
-  expect(markdownProcessor.baseUrl).toBe("/foo/bar");
 });
 
 test("it has parser property", () => {
@@ -171,7 +168,7 @@ test("it can parse markdown file", async () => {
   const markdownProcessor = new MarkdownProcessor({
     source: p.resolve(__dirname, "../fixtures/src"),
     output: p.resolve(__dirname, "../fixtures/public"),
-    baseUrl: "/foo"
+    urlGenerator: new UrlGenerator("http://example.com/foo")
   });
 
   markdownProcessor.parser.parseFile = jest.fn().mockReturnValue({
@@ -188,25 +185,12 @@ test("it can parse markdown file", async () => {
       title: "Foo"
     },
     content: "foo",
-    url: "/foo/posts/foo.html",
+    url: "http://example.com/foo/posts/foo.html",
+    relativeUrl: "/foo/posts/foo.html",
     collectionName: "posts"
   });
 
   expect(data.outputPath).toMatch(/\/posts\/foo\.html$/);
-});
-
-test("it can get url for output path", () => {
-  const markdownProcessor = new MarkdownProcessor({
-    baseUrl: "/foo",
-    output: "/dest"
-  });
-
-  expect(markdownProcessor.getUrlForOutputPath("bar/baz.html")).toBe(
-    "/foo/bar/baz.html"
-  );
-  expect(markdownProcessor.getUrlForOutputPath("/dest/bar/baz.html")).toBe(
-    "/foo/bar/baz.html"
-  );
 });
 
 test("it can get all markdown files", async () => {
