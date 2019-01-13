@@ -26,6 +26,14 @@ class Processor {
 
     this.renderer.addGlobal("config", this.config);
 
+    this.renderer.addFilter("absoluteUrl", path =>
+      this.config.urlGenerator.to(path)
+    );
+
+    this.renderer.addFilter("relativeUrl", path =>
+      this.config.urlGenerator.relative(path)
+    );
+
     this.renderer.addFilter(
       "formatDate",
       (date, format = this.config.defaultDateFormat) => formatDate(date, format)

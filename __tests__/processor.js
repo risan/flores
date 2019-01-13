@@ -42,6 +42,30 @@ test("it adds config data to renderer", () => {
   expect(processor.renderer.getGlobal("config")).toBeInstanceOf(Config);
 });
 
+test("it adds absoluteUrl filter to renderer", () => {
+  const processor = new Processor({
+    url: "http://example.com/foo",
+    env: "production"
+  });
+
+  const absoluteUrl = processor.renderer.env.getFilter("absoluteUrl");
+
+  expect(absoluteUrl).toBeInstanceOf(Function);
+  expect(absoluteUrl("bar/baz")).toBe("http://example.com/foo/bar/baz");
+});
+
+test("it adds relativeUrl filter to renderer", () => {
+  const processor = new Processor({
+    url: "http://example.com/foo",
+    env: "production"
+  });
+
+  const relativeUrl = processor.renderer.env.getFilter("relativeUrl");
+
+  expect(relativeUrl).toBeInstanceOf(Function);
+  expect(relativeUrl("bar/baz")).toBe("/foo/bar/baz");
+});
+
 test("it adds formatDate filter to renderer", () => {
   const processor = new Processor({ env: "production" });
 
