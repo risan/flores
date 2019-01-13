@@ -6,6 +6,7 @@ const Config = require("./config");
 const MarkdownProcessor = require("./markdown/markdown-processor");
 const remove = require("./fs/remove");
 const Renderer = require("./renderer");
+const SitemapGenerator = require("./sitemap-generator");
 const StaticFileProcessor = require("./static-file-processor");
 
 class Processor {
@@ -61,6 +62,8 @@ class Processor {
         toc: this.config.markdownToc
       }
     });
+
+    this.sitemap = new SitemapGenerator({ output: this.config.output });
 
     this.staticFile = new StaticFileProcessor({
       patterns: this.config.copyFiles,
@@ -118,6 +121,10 @@ class Processor {
 
     this.log(`✅ ${data.posts.length} posts are processed.`);
     this.log(`✅ ${data.pages.length} pages are processed.`);
+
+    await this.sitemap.generate({ posts: data.posts, pages: data.pages });
+
+    this.log("✅ Sitemap is generated.");
 
     return data;
   }
