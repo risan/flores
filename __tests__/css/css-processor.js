@@ -5,32 +5,28 @@ const CssProcessor = require("../../src/css/css-processor");
 const readFile = require("../../src/fs/read-file");
 const setupPostcss = require("../../src/css/setup-postcss");
 const writeToOutput = require("../../src/fs/write-to-output");
+const UrlGenerator = require("../../src/url-generator");
 
 jest.mock("../../src/fs/read-file");
 jest.mock("../../src/css/setup-postcss");
 jest.mock("../../src/fs/write-to-output");
 
-test("it has source, output, sourceMap, and hash properties", () => {
+test("it has source, output, urlGenerator, sourceMap, and hash properties", () => {
+  const urlGenerator = new UrlGenerator("http://example.com");
+
   const cssProcessor = new CssProcessor({
     source: "/src",
     output: "/dest",
+    urlGenerator,
     sourceMap: true,
     hash: true
   });
 
   expect(cssProcessor.source).toBe("/src");
   expect(cssProcessor.output).toBe("/dest");
+  expect(cssProcessor.urlGenerator).toBe(urlGenerator);
   expect(cssProcessor.sourceMap).toBe(true);
   expect(cssProcessor.hash).toBe(true);
-});
-
-test("it removes baseUrl trailing slash", () => {
-  const cssProcessor = new CssProcessor({
-    output: "/dest",
-    baseUrl: "/foo/"
-  });
-
-  expect(cssProcessor.baseUrl).toBe("/foo");
 });
 
 test("it can setup postcss processor", () => {
@@ -55,7 +51,8 @@ test("it can setup postcss processor", () => {
 test("it can process all css files", async () => {
   const cssProcessor = new CssProcessor({
     source: "/src",
-    output: "/dest"
+    output: "/dest",
+    urlGenerator: new UrlGenerator("http://example.com")
   });
 
   cssProcessor.getFiles = jest
@@ -65,7 +62,7 @@ test("it can process all css files", async () => {
   cssProcessor.process = jest.fn().mockImplementation(path => ({
     source: path,
     output: path,
-    url: `/foo/${path}`
+    url: `http://example.com/${path}`
   }));
 
   const results = await cssProcessor.processAll();
@@ -75,15 +72,16 @@ test("it can process all css files", async () => {
   expect(cssProcessor.process).toHaveBeenNthCalledWith(2, "style.css");
 
   expect(results).toEqual({
-    "css/main.css": "/foo/css/main.css",
-    "style.css": "/foo/style.css"
+    "css/main.css": "http://example.com/css/main.css",
+    "style.css": "http://example.com/style.css"
   });
 });
 
 test("it can process css file", async () => {
   const cssProcessor = new CssProcessor({
     source: "/src",
-    output: "/dest"
+    output: "/dest",
+    urlGenerator: new UrlGenerator("http://example.com")
   });
 
   readFile.mockReturnValue("source");
@@ -99,7 +97,7 @@ test("it can process css file", async () => {
   expect(result).toEqual({
     source: "css/main.css",
     output: "css/main.css",
-    url: "/css/main.css"
+    url: "http://example.com/css/main.css"
   });
 });
 

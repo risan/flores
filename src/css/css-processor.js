@@ -7,24 +7,22 @@ const readFile = require("../fs/read-file");
 const setupPostcss = require("./setup-postcss");
 const writeToOutput = require("../fs/write-to-output");
 
-const TRAILING_SLASH = /\/$/;
-
 class CssProcessor {
   /**
    * Create new CssProcessor instance.
-   * @param  {String}  options.source           - The source directory.
-   * @param  {String}  options.output           - The output directory.
-   * @param  {String}  options.baseUrl          - The base url to prepend to the output url.
-   * @param  {Array}   options.importPaths      - Array of paths to look for when importing files.
-   * @param  {Object}  options.presetEnvOptions - postcss-preset-env plugin options.
-   * @param  {Boolean} minify                   - Set to true to minify the css.
-   * @param  {Boolean} sourceMap                - Set to true to inline the source map.
-   * @param  {Boolean} hash                     - Set to true to append file hash.
+   * @param  {String}       options.source           - The source directory.
+   * @param  {String}       options.output           - The output directory.
+   * @param  {UrlGenerator} options.urlGenerator     - The UrlGenerator instance.
+   * @param  {Array}        options.importPaths      - Array of paths to look for when importing files.
+   * @param  {Object}       options.presetEnvOptions - postcss-preset-env plugin options.
+   * @param  {Boolean}      minify                   - Set to true to minify the css.
+   * @param  {Boolean}      sourceMap                - Set to true to inline the source map.
+   * @param  {Boolean}      hash                     - Set to true to append file hash.
    */
   constructor({
     source = process.cwd(),
     output,
-    baseUrl = "",
+    urlGenerator,
     importPaths = [],
     presetEnvOptions = {},
     minify = false,
@@ -33,7 +31,7 @@ class CssProcessor {
   }) {
     this.source = source;
     this.output = output;
-    this.baseUrl = baseUrl.replace(TRAILING_SLASH, "");
+    this.urlGenerator = urlGenerator;
     this.sourceMap = sourceMap;
     this.hash = hash;
 
@@ -86,7 +84,7 @@ class CssProcessor {
     return {
       source: p.relative(this.source, sourcePath),
       output,
-      url: `${this.baseUrl}/${output}`
+      url: this.urlGenerator.to(output)
     };
   }
 
