@@ -34,7 +34,7 @@ class Processor {
     this.css = new CssProcessor({
       source: this.config.source,
       output: this.config.output,
-      baseUrl: this.config.pathname,
+      urlGenerator: this.config.urlGenerator,
       presetEnvOptions: this.config.postcssPresetEnv,
       minify: this.config.isProduction(),
       sourceMap: !this.config.isProduction(),
