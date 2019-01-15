@@ -10,6 +10,8 @@ const build = async (options = {}) => {
 
   await processor.process();
 
+  console.log(`✅ Build complete: ${processor.config.output}`);
+
   return processor;
 };
 
