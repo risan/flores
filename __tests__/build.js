@@ -1,4 +1,6 @@
 /* global beforeEach:false, expect:false, jest:false, test:false */
+const { URL } = require("url");
+
 const build = require("../src/build");
 const Processor = require("../src/processor");
 
