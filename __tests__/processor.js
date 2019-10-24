@@ -74,7 +74,7 @@ test("it adds formatDate filter to renderer", () => {
   const formatDate = processor.renderer.env.getFilter("formatDate");
 
   expect(formatDate).toBeInstanceOf(Function);
-  expect(formatDate(new Date("2018-08-01T12:00:00+00:00"), "DD MMM YYYY")).toBe(
+  expect(formatDate(new Date("2018-08-01T12:00:00+00:00"), "dd MMM yyyy")).toBe(
     "01 Aug 2018"
   );
 });
