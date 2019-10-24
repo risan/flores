@@ -2,7 +2,6 @@
 
 [![Build Status](https://badgen.net/travis/risan/flores)](https://travis-ci.org/risan/flores)
 [![Test Covarage](https://badgen.net/codecov/c/github/risan/flores)](https://codecov.io/gh/risan/flores)
-[![Greenkeeper](https://badges.greenkeeper.io/risan/flores.svg)](https://greenkeeper.io)
 [![Latest Version](https://badgen.net/npm/v/flores)](https://www.npmjs.com/package/flores)
 
 Minimalist static site generator.
@@ -223,4 +222,4 @@ Configuration options is an optional `Object` that you can pass to `build`, `ser
 
 ## License
 
-[MIT](https://github.com/risan/flores/blob/master/LICENSE) © [Risan Bagja Pradana](https://bagja.net)
+[MIT](https://github.com/risan/flores/blob/master/LICENSE) © [Risan Bagja Pradana](https://risanb.com)
